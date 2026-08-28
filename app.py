@@ -109,6 +109,7 @@ def administrador():
     if session.get("usuario_tipo") != "Administrador" or not session.get("usuario_id"):
         return redirect(url_for("login"))
     requisicoes = Administrador.listar_requisicoes()
+    obras = Administrador.listar_obras_ativas()
     resumo = {
         "pendentes": sum(pedido["status"] == "Pendente" for pedido in requisicoes),
         "gastos": sum(float(pedido["valor_pago"] or 0) for pedido in requisicoes),
@@ -120,7 +121,37 @@ def administrador():
         nome=session.get("usuario_nome", "Administrador"),
         requisicoes=requisicoes,
         resumo=resumo,
+        obras=obras,
     )
+
+@app.route("/administrador/obras/cadastrar", methods=["POST"])
+def cadastrar_obra():
+    if session.get("usuario_tipo") != "Administrador" or not session.get("usuario_id"):
+        return redirect(url_for("login"))
+    try:
+        Administrador.cadastrar_obra(
+            request.form.get("nome", ""),
+            request.form.get("endereco", ""),
+            request.form.get("responsavel", ""),
+            session["usuario_id"],
+        )
+        flash("Obra cadastrada com sucesso.", "sucesso")
+    except ValueError as error:
+        flash(str(error), "erro")
+    return redirect(url_for("administrador"))
+
+@app.route("/administrador/obras/<int:id_obra>/excluir", methods=["POST"])
+def excluir_obra(id_obra):
+    if session.get("usuario_tipo") != "Administrador" or not session.get("usuario_id"):
+        return redirect(url_for("login"))
+    try:
+        if Administrador.excluir_obra(id_obra):
+            flash("Obra removida da exibição. O histórico foi preservado.", "sucesso")
+        else:
+            flash("Obra não encontrada ou já removida.", "erro")
+    except Exception:
+        flash("Não foi possível remover a obra agora.", "erro")
+    return redirect(url_for("administrador"))
 
 @app.route("/administrador/cadastros")
 def cadastros_pendentes():

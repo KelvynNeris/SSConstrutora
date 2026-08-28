@@ -3,6 +3,88 @@ from conexao import Conexao
 
 class Administrador:
 	@staticmethod
+	def listar_obras_ativas():
+		"""Retorna somente obras ativas para exibição no painel."""
+		conexao = None
+		cursor = None
+		try:
+			conexao = Conexao.conectar()
+			cursor = conexao.cursor(dictionary=True)
+			cursor.execute(
+				"""SELECT id_obra, nome, endereco, responsavel, data_criacao
+				   FROM tb_obras
+				   WHERE ativa = TRUE
+				   ORDER BY data_criacao DESC"""
+			)
+			return cursor.fetchall()
+		finally:
+			if cursor:
+				cursor.close()
+			if conexao:
+				conexao.close()
+
+	@staticmethod
+	def excluir_obra(id_obra):
+		"""Oculta uma obra sem apagar seu histórico do banco."""
+		conexao = None
+		cursor = None
+		try:
+			conexao = Conexao.conectar()
+			cursor = conexao.cursor()
+			cursor.execute(
+				"""UPDATE tb_obras
+				   SET ativa = FALSE
+				   WHERE id_obra = %s AND ativa = TRUE""",
+				(id_obra,),
+			)
+			conexao.commit()
+			return cursor.rowcount == 1
+		except Exception:
+			if conexao:
+				conexao.rollback()
+			raise
+		finally:
+			if cursor:
+				cursor.close()
+			if conexao:
+				conexao.close()
+
+	@staticmethod
+	def cadastrar_obra(nome, endereco, responsavel, id_administrador):
+		"""Cadastra uma obra vinculada ao administrador que a registrou."""
+		nome = nome.strip()
+		endereco = endereco.strip()
+		responsavel = responsavel.strip()
+		if not nome or not endereco:
+			raise ValueError("Informe o nome e o endereço da obra.")
+
+		conexao = None
+		cursor = None
+		try:
+			conexao = Conexao.conectar()
+			cursor = conexao.cursor()
+			cursor.execute("SELECT id_obra FROM tb_obras WHERE LOWER(nome) = LOWER(%s)", (nome,))
+			if cursor.fetchone():
+				raise ValueError("Já existe uma obra com esse nome.")
+			cursor.execute(
+				"""INSERT INTO tb_obras (nome, endereco, responsavel, id_administrador)
+				   VALUES (%s, %s, %s, %s)""",
+				(nome, endereco, responsavel or None, id_administrador),
+			)
+			id_obra = cursor.lastrowid
+			conexao.commit()
+			return id_obra
+		except Exception:
+			if conexao:
+				conexao.rollback()
+			raise
+		finally:
+			if cursor:
+				cursor.close()
+			if conexao:
+				conexao.close()
+
+	@staticmethod
 	def listar_requisicoes():
 		"""Retorna as requisições com os dados do material e solicitante."""
 		conexao = None

@@ -106,4 +106,29 @@ document.addEventListener("DOMContentLoaded", () => {
             if (event.key === "Escape" && modal.classList.contains("is-open")) closeModal();
         });
     }
+
+    const workModal = document.querySelector("#work-modal");
+    if (workModal) {
+        const closeWorkModal = () => {
+            workModal.classList.remove("is-open");
+            workModal.setAttribute("aria-hidden", "true");
+        };
+
+        document.querySelectorAll("[data-open-work-modal]").forEach((button) => {
+            button.addEventListener("click", () => {
+                workModal.classList.add("is-open");
+                workModal.setAttribute("aria-hidden", "false");
+                document.querySelector("#work-name").focus();
+            });
+        });
+        document.querySelectorAll("[data-close-work-modal]").forEach((button) => {
+            button.addEventListener("click", closeWorkModal);
+        });
+        workModal.addEventListener("click", (event) => {
+            if (event.target === workModal) closeWorkModal();
+        });
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && workModal.classList.contains("is-open")) closeWorkModal();
+        });
+    }
 });

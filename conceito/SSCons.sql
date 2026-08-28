@@ -15,6 +15,18 @@ CREATE TABLE tb_usuarios (
     primeiro_login BOOLEAN DEFAULT TRUE
 );
 
+-- Obras cadastradas pelo administrador
+CREATE TABLE tb_obras (
+    id_obra INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL UNIQUE,
+    endereco VARCHAR(255) NOT NULL,
+    responsavel VARCHAR(100),
+    id_administrador INT NOT NULL,
+    ativa BOOLEAN DEFAULT TRUE,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_administrador) REFERENCES tb_usuarios(id_usuario)
+);
+
 -- Tabela de materiais/produtos
 CREATE TABLE tb_materiais (
     id_material INT AUTO_INCREMENT PRIMARY KEY,
