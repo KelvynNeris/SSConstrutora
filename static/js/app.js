@@ -131,4 +131,32 @@ document.addEventListener("DOMContentLoaded", () => {
             if (event.key === "Escape" && workModal.classList.contains("is-open")) closeWorkModal();
         });
     }
+
+    const logoutModal = document.querySelector("#logout-modal");
+    if (logoutModal) {
+        const closeLogoutModal = () => {
+            logoutModal.classList.remove("is-open");
+            logoutModal.setAttribute("aria-hidden", "true");
+        };
+
+        document.querySelectorAll("[data-open-logout-modal]").forEach((button) => {
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+                logoutModal.classList.add("is-open");
+                logoutModal.setAttribute("aria-hidden", "false");
+            });
+        });
+
+        document.querySelectorAll("[data-close-logout-modal]").forEach((button) => {
+            button.addEventListener("click", closeLogoutModal);
+        });
+
+        logoutModal.addEventListener("click", (event) => {
+            if (event.target === logoutModal) closeLogoutModal();
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && logoutModal.classList.contains("is-open")) closeLogoutModal();
+        });
+    }
 });

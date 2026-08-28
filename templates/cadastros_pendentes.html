@@ -17,8 +17,20 @@
             <a class="active" href="{{ url_for('cadastros_pendentes') }}">Cadastros pendentes</a>
             <a href="{{ url_for('relatorio') }}">Relatórios</a>
         </nav>
-        <div class="admin-user"><span class="user-avatar">{{ nome[:1]|upper }}</span><span>{{ nome }}</span><a href="{{ url_for('logout') }}" aria-label="Sair">Sair</a></div>
+        <div class="admin-user"><span class="user-avatar">{{ nome[:1]|upper }}</span><span>{{ nome }}</span><a href="{{ url_for('logout') }}" data-open-logout-modal aria-label="Sair">Sair</a></div>
     </header>
+
+    <div class="modal-backdrop" id="logout-modal" aria-hidden="true">
+        <div class="request-modal">
+            <button type="button" class="modal-close" data-close-logout-modal aria-label="Fechar">×</button>
+            <h2>Encerrar sessão?</h2>
+            <p class="modal-description">Você será redirecionado para a página inicial e precisará entrar novamente para acessar o painel.</p>
+            <div class="modal-actions">
+                <button type="button" class="modal-cancel" data-close-logout-modal>Cancelar</button>
+                <a class="button button-primary" href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </div>
+    </div>
 
     <main class="admin-shell pending-users-shell">
         <section class="admin-heading">
