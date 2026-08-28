@@ -16,6 +16,7 @@ class User:
         self.tipo = None
         self.logado = False
         self.aprovado = False
+        self.primeiro_login = False
         self.pendente = False
         self.erro = None
 
@@ -81,7 +82,7 @@ class User:
             conexao = Conexao.conectar()
             cursor = conexao.cursor()
             cursor.execute(
-                """SELECT id_usuario, nome, email, senha, telefone, tipo_usuario, aprovado
+                     """SELECT id_usuario, nome, email, senha, telefone, tipo_usuario, aprovado, primeiro_login
                    FROM tb_usuarios WHERE LOWER(nome) = LOWER(%s) AND telefone = %s""",
                 (nome.strip(), self._normalizar_telefone(telefone)),
             )
@@ -93,11 +94,57 @@ class User:
                 self.pendente = True
                 self.erro = "Seu cadastro ainda aguarda aprovação do administrador."
                 return False
-            self.id_usuario, self.nome, self.email, self.senha, self.tel, self.tipo, self.aprovado = resultado
+            self.id_usuario, self.nome, self.email, self.senha, self.tel, self.tipo, self.aprovado, self.primeiro_login = resultado
             self.logado = True
             return True
         except Exception:
             self.erro = "Não foi possível realizar o login agora."
+            return False
+        finally:
+            if cursor:
+                cursor.close()
+            if conexao:
+                conexao.close()
+
+    def atualizar_primeiro_acesso(self, id_usuario, nome, telefone, email, senha):
+        """Atualiza os dados do administrador pré-cadastrado e encerra o primeiro acesso."""
+        self.erro = None
+        conexao = None
+        cursor = None
+        try:
+            conexao = Conexao.conectar()
+            cursor = conexao.cursor()
+            email = email.strip().lower()
+            telefone = self._normalizar_telefone(telefone)
+            cursor.execute(
+                """SELECT id_usuario FROM tb_usuarios
+                   WHERE (email = %s OR telefone = %s) AND id_usuario <> %s""",
+                (email, telefone, id_usuario),
+            )
+            if cursor.fetchone():
+                self.erro = "E-mail ou telefone já cadastrado por outro usuário."
+                return False
+            cursor.execute(
+                """UPDATE tb_usuarios
+                   SET nome = %s, telefone = %s, email = %s, senha = %s, primeiro_login = FALSE
+                   WHERE id_usuario = %s""",
+                (nome.strip(), telefone, email, self._hash_senha(senha), id_usuario),
+            )
+            if cursor.rowcount != 1:
+                self.erro = "Usuário não encontrado."
+                conexao.rollback()
+                return False
+            conexao.commit()
+            self.id_usuario = id_usuario
+            self.nome = nome.strip()
+            self.tel = telefone
+            self.email = email
+            self.primeiro_login = False
+            return True
+        except Exception:
+            if conexao:
+                conexao.rollback()
+            self.erro = "Não foi possível atualizar seus dados agora."
             return False
         finally:
             if cursor:

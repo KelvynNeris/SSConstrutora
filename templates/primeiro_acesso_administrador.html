@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualizar acesso | SS Construtora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-page first-access-page">
+    <main class="auth-layout auth-layout-reverse">
+        <section class="auth-intro">
+            <a class="brand auth-brand" href="/" aria-label="Voltar para o início">
+                <span class="brand-mark">SS</span>
+                <span><strong>SS Construtora</strong><small>Gestão de obras</small></span>
+            </a>
+            <div class="auth-message">
+                <p class="eyebrow">Primeiro acesso</p>
+                <h1>Vamos deixar<br><em>seu acesso seguro.</em></h1>
+                <p>Atualize os dados do administrador antes de acessar o painel de gestão da construtora.</p>
+            </div>
+            <span class="auth-number">01 / 01</span>
+        </section>
+        <section class="auth-form-area">
+            <div class="form-heading">
+                <p class="eyebrow">Atualização obrigatória</p>
+                <h2>Seus dados</h2>
+                <p>Substitua os dados provisórios do primeiro acesso.</p>
+            </div>
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}<div class="form-alert" role="alert">{{ mensagens[0][1] }}</div>{% endif %}
+            {% endwith %}
+            <form class="auth-form" method="post" action="{{ url_for('primeiro_acesso_administrador') }}">
+                <label for="nome">Nome completo</label>
+                <input id="nome" name="nome" type="text" autocomplete="name" value="{{ dados.nome }}" required>
+
+                <label for="telefone">Número de telefone</label>
+                <input id="telefone" name="telefone" type="tel" autocomplete="tel" value="{{ dados.telefone }}" placeholder="(00) 00000-0000" required>
+
+                <label for="email">E-mail</label>
+                <input id="email" name="email" type="email" autocomplete="email" value="{{ dados.email }}" required>
+
+                <label for="senha">Nova senha</label>
+                <input id="senha" name="senha" type="password" autocomplete="new-password" minlength="6" placeholder="Crie uma nova senha" required>
+
+                <label for="confirmar_senha">Confirmar nova senha</label>
+                <input id="confirmar_senha" name="confirmar_senha" type="password" autocomplete="new-password" minlength="6" placeholder="Digite a senha novamente" oninput="this.setCustomValidity(this.value !== document.getElementById('senha').value ? 'As senhas não coincidem.' : '')" required>
+
+                <button class="button button-primary form-submit" type="submit">Salvar e acessar painel <span aria-hidden="true">-&gt;</span></button>
+            </form>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

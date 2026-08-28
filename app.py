@@ -23,7 +23,11 @@ def login():
         if usuario.entrar(request.form.get("nome", ""), request.form.get("telefone", ""), request.form.get("senha", "")):
             session["usuario_id"] = usuario.id_usuario
             session["usuario_nome"] = usuario.nome
+            session["usuario_email"] = usuario.email
+            session["usuario_telefone"] = usuario.tel
             session["usuario_tipo"] = usuario.tipo
+            if usuario.tipo == "Administrador" and usuario.primeiro_login:
+                return redirect(url_for("primeiro_acesso_administrador"))
             destino = "administrador" if usuario.tipo == "Administrador" else "funcionario"
             return redirect(url_for(destino))
         if usuario.pendente:
@@ -49,6 +53,28 @@ def cadastro():
 def aguardando_confirmacao():
     email = session.get("cadastro_email", "")
     return render_template("aguardando_confirmacao.html", email=email)
+
+@app.route("/primeiro-acesso-administrador", methods=["GET", "POST"])
+def primeiro_acesso_administrador():
+    if session.get("usuario_tipo") != "Administrador" or not session.get("usuario_id"):
+        return redirect(url_for("login"))
+    if request.method == "POST":
+        senha = request.form.get("senha", "")
+        if senha != request.form.get("confirmar_senha", ""):
+            flash("As senhas não coincidem.", "erro")
+            return render_template("primeiro_acesso_administrador.html", dados=request.form)
+        usuario = User()
+        if usuario.atualizar_primeiro_acesso(
+            session["usuario_id"], request.form.get("nome", ""), request.form.get("telefone", ""),
+            request.form.get("email", ""), senha,
+        ):
+            session["usuario_nome"] = usuario.nome
+            session["usuario_email"] = usuario.email
+            session["usuario_telefone"] = usuario.tel
+            return redirect(url_for("administrador"))
+        flash(usuario.erro, "erro")
+    dados = {"nome": session.get("usuario_nome", ""), "email": session.get("usuario_email", ""), "telefone": session.get("usuario_telefone", "")}
+    return render_template("primeiro_acesso_administrador.html", dados=dados)
 
 @app.route("/requisicao", methods=["GET", "POST"])
 def requisicao():
