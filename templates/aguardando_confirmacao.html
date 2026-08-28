@@ -6,7 +6,7 @@
     <title>Aguardando aprovação | SS Construtora</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="auth-page pending-page">
+<body class="auth-page pending-page" data-approval-poll="true">
     <main class="pending-layout">
         <a class="brand pending-brand" href="/" aria-label="SS Construtora - inicio">
             <span class="brand-mark">SS</span>
@@ -15,7 +15,7 @@
 
         <section class="pending-content" aria-labelledby="pending-title">
             <div class="pending-icon" aria-hidden="true">
-                <span></span>
+                <span class="pending-pulse"></span>
             </div>
             <p class="eyebrow">Cadastro recebido</p>
             <h1 id="pending-title">Seu cadastro está<br><em>em análise.</em></h1>
@@ -24,6 +24,7 @@
                 <p class="pending-email">{{ email }}</p>
             {% endif %}
             <p class="pending-help">Assim que o cadastro for aprovado, você poderá entrar com seus dados e começar a fazer requisições para sua obra.</p>
+            <div class="pending-status" role="status"><span>Aguardando aprovação</span><i></i><i></i><i></i></div>
             <div class="pending-actions">
                 <a class="button button-primary" href="{{ url_for('login') }}">Ir para o login <span aria-hidden="true">-&gt;</span></a>
                 <a class="text-link" href="{{ url_for('inicio') }}">Voltar ao início</a>

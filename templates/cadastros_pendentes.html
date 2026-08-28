@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastros pendentes | SS Construtora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="admin-page" data-auto-refresh="10000">
+    <header class="admin-topbar">
+        <a class="brand" href="{{ url_for('administrador') }}" aria-label="Voltar ao painel">
+            <span class="brand-mark">SS</span>
+            <span><strong>SS Construtora</strong><small>Gestão de obras</small></span>
+        </a>
+        <nav class="admin-nav" aria-label="Navegação principal">
+            <a href="{{ url_for('administrador') }}">Painel</a>
+            <a class="active" href="{{ url_for('cadastros_pendentes') }}">Cadastros pendentes</a>
+            <a href="{{ url_for('relatorio') }}">Relatórios</a>
+        </nav>
+        <div class="admin-user"><span class="user-avatar">{{ nome[:1]|upper }}</span><span>{{ nome }}</span><a href="/" aria-label="Sair">Sair</a></div>
+    </header>
+
+    <main class="admin-shell pending-users-shell">
+        <section class="admin-heading">
+            <div><p class="eyebrow">Controle de acesso</p><h1>Cadastros pendentes</h1><p>Revise os dados dos funcionários antes de liberar o acesso ao sistema.</p></div>
+            <span class="pending-count">{{ cadastros|length }} aguardando</span>
+        </section>
+        <section class="admin-panel pending-users-panel">
+            <div class="panel-heading"><div><p class="eyebrow">Análise administrativa</p><h2>Solicitações de acesso</h2></div></div>
+            {% if cadastros %}
+                <div class="pending-users-list">
+                    {% for cadastro in cadastros %}
+                        <article class="pending-user"><span class="request-initial">{{ cadastro.nome[:1]|upper }}</span><div class="pending-user-data"><strong>{{ cadastro.nome }}</strong><p>{{ cadastro.email }} · {{ cadastro.telefone }}</p><small>Solicitado em {{ cadastro.data_criacao.strftime('%d/%m/%Y às %H:%M') }}</small></div><form method="post" action="{{ url_for('aprovar_cadastro', id_usuario=cadastro.id_usuario) }}"><button class="button button-primary" type="submit">Aprovar acesso <span aria-hidden="true">-&gt;</span></button></form></article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state"><strong>Nenhum cadastro pendente</strong><p>Todos os funcionários estão com o acesso atualizado.</p></div>
+            {% endif %}
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

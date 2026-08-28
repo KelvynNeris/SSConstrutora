@@ -54,6 +54,25 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    if (document.body.dataset.approvalPoll === "true") {
+        const checkApproval = async () => {
+            try {
+                const response = await fetch("/api/cadastro/status", { headers: { Accept: "application/json" } });
+                if (response.ok && (await response.json()).aprovado) {
+                    window.location.href = "/login";
+                }
+            } catch (error) {
+            }
+        };
+        checkApproval();
+        window.setInterval(checkApproval, 5000);
+    }
+
+    const refreshInterval = Number(document.body.dataset.autoRefresh);
+    if (refreshInterval > 0) {
+        window.setInterval(() => window.location.reload(), refreshInterval);
+    }
+
     const modal = document.querySelector("#request-modal");
     const modalForm = document.querySelector("#request-update-form");
 

@@ -18,6 +18,7 @@
             <a href="#obras">Obras</a>
             <a href="#estoque">Estoque</a>
             <a href="{{ url_for('relatorio') }}">Relatórios</a>
+            <a href="{{ url_for('cadastros_pendentes') }}">Cadastros</a>
         </nav>
         <div class="admin-user"><span class="user-avatar">{{ nome[:1]|upper }}</span><span>{{ nome }}</span><a href="/" aria-label="Sair">Sair</a></div>
     </header>
@@ -29,7 +30,7 @@
                 <h1>Bom dia, {{ nome.split()[0] }}.</h1>
                 <p>Acompanhe o movimento das obras e aprove as solicitações da equipe.</p>
             </div>
-            <a class="button button-primary" href="{{ url_for('requisicao') }}">Nova requisição <span aria-hidden="true">+</span></a>
+            <div class="admin-heading-actions"><a class="button button-primary" href="{{ url_for('cadastros_pendentes') }}">Aprovar funcionários <span aria-hidden="true">-&gt;</span></a><a class="button button-dark" href="{{ url_for('requisicao') }}">Nova requisição <span aria-hidden="true">+</span></a></div>
         </section>
 
         <section class="admin-stats" aria-label="Resumo do sistema">

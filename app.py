@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import re
 from collections import defaultdict
 from user import User
+from adm import Administrador
 
 app = Flask(__name__)
 app.secret_key = '0000' 
@@ -54,6 +55,13 @@ def aguardando_confirmacao():
     email = session.get("cadastro_email", "")
     return render_template("aguardando_confirmacao.html", email=email)
 
+@app.route("/api/cadastro/status")
+def status_cadastro():
+    email = session.get("cadastro_email")
+    if not email:
+        return jsonify({"aprovado": False})
+    return jsonify({"aprovado": Administrador.cadastro_aprovado(email)})
+
 @app.route("/primeiro-acesso-administrador", methods=["GET", "POST"])
 def primeiro_acesso_administrador():
     if session.get("usuario_tipo") != "Administrador" or not session.get("usuario_id"):
@@ -83,6 +91,20 @@ def requisicao():
 @app.route("/administrador")
 def administrador():
     return render_template("administrador.html", nome=session.get("usuario_nome", "Administrador"))
+
+@app.route("/administrador/cadastros")
+def cadastros_pendentes():
+    if session.get("usuario_tipo") != "Administrador":
+        return redirect(url_for("login"))
+    cadastros = Administrador.listar_cadastros_pendentes()
+    return render_template("cadastros_pendentes.html", nome=session.get("usuario_nome", "Administrador"), cadastros=cadastros)
+
+@app.route("/administrador/cadastros/<int:id_usuario>/aprovar", methods=["POST"])
+def aprovar_cadastro(id_usuario):
+    if session.get("usuario_tipo") != "Administrador":
+        return redirect(url_for("login"))
+    Administrador.aprovar_cadastro(id_usuario)
+    return redirect(url_for("cadastros_pendentes"))
 
 @app.route("/requisicao/<int:id_pedido>/atualizar", methods=["POST"])
 def atualizar_requisicao(id_pedido):
