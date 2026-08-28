@@ -3,6 +3,30 @@ from conexao import Conexao
 
 class Administrador:
 	@staticmethod
+	def listar_requisicoes():
+		"""Retorna as requisições com os dados do material e solicitante."""
+		conexao = None
+		cursor = None
+		try:
+			conexao = Conexao.conectar()
+			cursor = conexao.cursor(dictionary=True)
+			cursor.execute(
+				"""SELECT p.id_pedido, p.obra, p.quantidade, p.apresentacao,
+						  p.status, p.data_pedido, p.valor_pago,
+						  m.nome AS material_nome, u.nome AS funcionario_nome
+				   FROM tb_pedidos p
+				   INNER JOIN tb_materiais m ON m.id_material = p.id_material
+				   INNER JOIN tb_usuarios u ON u.id_usuario = p.id_funcionario
+				   ORDER BY p.data_pedido DESC"""
+			)
+			return cursor.fetchall()
+		finally:
+			if cursor:
+				cursor.close()
+			if conexao:
+				conexao.close()
+
+	@staticmethod
 	def cadastro_aprovado(email):
 		"""Consulta se um funcionário já foi aprovado pelo administrador."""
 		conexao = None

@@ -6,7 +6,7 @@
     <title>Painel administrativo | SS Construtora</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="admin-page">
+<body class="admin-page" data-auto-refresh="10000">
     <header class="admin-topbar">
         <a class="brand" href="/" aria-label="SS Construtora - inicio">
             <span class="brand-mark">SS</span>
@@ -37,19 +37,21 @@
         {% endwith %}
 
         <section class="admin-stats" aria-label="Resumo do sistema">
-            <article class="stat-card stat-highlight"><span>Pedidos pendentes</span><strong>03</strong><small>precisam de sua análise</small></article>
-            <article class="stat-card"><span>Gastos este mês</span><strong>R$ 12.480</strong><small><b class="trend-up">+8,4%</b> contra o mês anterior</small></article>
-            <article class="stat-card"><span>Obras ativas</span><strong>04</strong><small>em andamento</small></article>
-            <article class="stat-card"><span>Itens em estoque</span><strong>128</strong><small>06 itens em nível baixo</small></article>
+            <article class="stat-card stat-highlight"><span>Pedidos pendentes</span><strong>{{ resumo.pendentes }}</strong><small>precisam de sua análise</small></article>
+            <article class="stat-card"><span>Gastos registrados</span><strong>R$ {{ '%.2f'|format(resumo.gastos) }}</strong><small>valores pagos nos pedidos</small></article>
+            <article class="stat-card"><span>Obras com pedidos</span><strong>{{ resumo.obras }}</strong><small>com movimentação registrada</small></article>
+            <article class="stat-card"><span>Total de pedidos</span><strong>{{ resumo.itens }}</strong><small>requisições no sistema</small></article>
         </section>
 
         <section class="admin-content-grid">
             <div class="admin-panel" id="requisicoes">
                 <div class="panel-heading"><div><p class="eyebrow">Ação necessária</p><h2>Requisições recentes</h2></div><a href="#requisicoes">Ver todas <span aria-hidden="true">-&gt;</span></a></div>
                 <div class="request-list">
-                    <article class="admin-request"><span class="request-initial">MS</span><div><strong>Marcos Silva</strong><p>10 sacos de cimento · Jardim Sul</p></div><time>há 12 min</time><button type="button" class="approve-button" data-request-id="1" data-requester="Marcos Silva" data-material="Cimento" data-quantity="10 sacos de 50 kg" data-work="Residencial Jardim Sul" data-date="28/08/2026">Analisar</button></article>
-                    <article class="admin-request"><span class="request-initial request-initial-sage">RA</span><div><strong>Rafael Alves</strong><p>500 unidades de tijolo · Vila Nova</p></div><time>há 38 min</time><button type="button" class="approve-button" data-request-id="2" data-requester="Rafael Alves" data-material="Tijolo cerâmico" data-quantity="500 unidades" data-work="Reforma Vila Nova" data-date="27/08/2026">Analisar</button></article>
-                    <article class="admin-request"><span class="request-initial request-initial-sand">JC</span><div><strong>João Costa</strong><p>15 kg de prego · Comercial Centro</p></div><time>há 1 h</time><button type="button" class="approve-button" data-request-id="3" data-requester="João Costa" data-material="Prego comum" data-quantity="15 kg" data-work="Comercial Centro" data-date="26/08/2026">Analisar</button></article>
+                    {% for pedido in requisicoes %}
+                        <article class="admin-request"><span class="request-initial">{{ pedido.funcionario_nome[:2]|upper }}</span><div><strong>{{ pedido.funcionario_nome }}</strong><p>{{ pedido.quantidade }} {{ pedido.apresentacao }} de {{ pedido.material_nome }} · {{ pedido.obra }}</p></div><time>{{ pedido.data_pedido.strftime('%d/%m/%Y') }}</time><button type="button" class="approve-button" data-request-id="{{ pedido.id_pedido }}" data-requester="{{ pedido.funcionario_nome }}" data-material="{{ pedido.material_nome }}" data-quantity="{{ pedido.quantidade }} {{ pedido.apresentacao }}" data-work="{{ pedido.obra }}" data-date="{{ pedido.data_pedido.strftime('%d/%m/%Y') }}">Analisar</button></article>
+                    {% else %}
+                        <div class="empty-state"><strong>Nenhuma requisição encontrada</strong><p>Os novos pedidos dos funcionários aparecerão aqui.</p></div>
+                    {% endfor %}
                 </div>
             </div>
 

@@ -106,7 +106,21 @@ def requisicao():
 
 @app.route("/administrador")
 def administrador():
-    return render_template("administrador.html", nome=session.get("usuario_nome", "Administrador"))
+    if session.get("usuario_tipo") != "Administrador" or not session.get("usuario_id"):
+        return redirect(url_for("login"))
+    requisicoes = Administrador.listar_requisicoes()
+    resumo = {
+        "pendentes": sum(pedido["status"] == "Pendente" for pedido in requisicoes),
+        "gastos": sum(float(pedido["valor_pago"] or 0) for pedido in requisicoes),
+        "obras": len({pedido["obra"] for pedido in requisicoes}),
+        "itens": len(requisicoes),
+    }
+    return render_template(
+        "administrador.html",
+        nome=session.get("usuario_nome", "Administrador"),
+        requisicoes=requisicoes,
+        resumo=resumo,
+    )
 
 @app.route("/administrador/cadastros")
 def cadastros_pendentes():
