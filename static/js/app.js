@@ -36,6 +36,24 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    const formatPhone = (value) => {
+        const digits = value.replace(/\D/g, "").slice(0, 11);
+        if (digits.length <= 2) return digits;
+        if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+        return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    };
+
+    document.querySelectorAll("input[type='tel']").forEach((phoneInput) => {
+        phoneInput.setAttribute("inputmode", "numeric");
+        phoneInput.setAttribute("maxlength", "15");
+        phoneInput.addEventListener("input", () => {
+            phoneInput.value = formatPhone(phoneInput.value);
+        });
+        phoneInput.form.addEventListener("submit", () => {
+            phoneInput.value = phoneInput.value.replace(/\D/g, "");
+        });
+    });
+
     const modal = document.querySelector("#request-modal");
     const modalForm = document.querySelector("#request-update-form");
 
