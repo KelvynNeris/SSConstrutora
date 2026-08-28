@@ -124,11 +124,19 @@ def aprovar_cadastro(id_usuario):
 
 @app.route("/requisicao/<int:id_pedido>/atualizar", methods=["POST"])
 def atualizar_requisicao(id_pedido):
-    session[f"pedido_{id_pedido}"] = {
-        "status": request.form.get("status", "Pendente"),
-        "valor_pago": request.form.get("valor_pago", ""),
-        "loja": request.form.get("loja", "")
-    }
+    if session.get("usuario_tipo") != "Administrador" or not session.get("usuario_id"):
+        return redirect(url_for("login"))
+    try:
+        Administrador.atualizar_requisicao(
+            id_pedido,
+            session["usuario_id"],
+            request.form.get("status", "Pendente"),
+            request.form.get("valor_pago", ""),
+            request.form.get("loja", ""),
+        )
+        flash("Requisição atualizada com sucesso.", "sucesso")
+    except ValueError as error:
+        flash(str(error), "erro")
     return redirect(url_for("administrador"))
 
 @app.route("/relatorio")

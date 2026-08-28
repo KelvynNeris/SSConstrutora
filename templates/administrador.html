@@ -32,6 +32,9 @@
             </div>
             <div class="admin-heading-actions"><a class="button button-primary" href="{{ url_for('cadastros_pendentes') }}">Aprovar funcionários <span aria-hidden="true">-&gt;</span></a><a class="button button-dark" href="{{ url_for('requisicao') }}">Nova requisição <span aria-hidden="true">+</span></a></div>
         </section>
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}<div class="form-alert admin-alert {{ mensagens[0][0] }}" role="alert">{{ mensagens[0][1] }}</div>{% endif %}
+        {% endwith %}
 
         <section class="admin-stats" aria-label="Resumo do sistema">
             <article class="stat-card stat-highlight"><span>Pedidos pendentes</span><strong>03</strong><small>precisam de sua análise</small></article>
