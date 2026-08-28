@@ -24,6 +24,9 @@
             </div>
             <div class="request-step"><strong>01</strong><span>de 02<br>nova requisicao</span></div>
         </div>
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}<div class="form-alert request-alert {{ mensagens[0][0] }}" role="alert">{{ mensagens[0][1] }}</div>{% endif %}
+        {% endwith %}
 
         <form class="request-form" method="post" action="{{ url_for('requisicao') }}">
             <div class="request-block">
@@ -45,12 +48,12 @@
                     <label for="material">Qual material esta faltando?</label>
                     <select id="material" name="material" required>
                         <option value="" selected disabled>Selecione o material</option>
-                        <option value="cimento">Cimento</option>
-                        <option value="areia">Areia</option>
-                        <option value="brita">Brita</option>
-                        <option value="tijolo">Tijolo</option>
-                        <option value="ferro">Ferro para construcao</option>
-                        <option value="prego">Prego</option>
+                        <option value="2">Cimento CP-II</option>
+                        <option value="4">Areia média</option>
+                        <option value="5">Brita 1</option>
+                        <option value="3">Tijolo cerâmico</option>
+                        <option value="6">Ferro 10 mm</option>
+                        <option value="1">Prego</option>
                         <option value="outro">Outro material</option>
                     </select>
                 </div>

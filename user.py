@@ -151,3 +151,36 @@ class User:
                 cursor.close()
             if conexao:
                 conexao.close()
+
+    @staticmethod
+    def pedir_material(id_funcionario, obra, id_material, quantidade, apresentacao, observacao=""):
+        """Registra uma requisição de material aguardando análise do administrador."""
+        if not obra or not apresentacao or float(quantidade) <= 0:
+            raise ValueError("Informe obra, apresentação e uma quantidade válida.")
+
+        conexao = None
+        cursor = None
+        try:
+            conexao = Conexao.conectar()
+            cursor = conexao.cursor()
+            cursor.execute("SELECT id_material FROM tb_materiais WHERE id_material = %s AND ativo = TRUE", (id_material,))
+            if not cursor.fetchone():
+                raise ValueError("Material inválido ou inativo.")
+            cursor.execute(
+                """INSERT INTO tb_pedidos
+                   (id_funcionario, id_material, obra, quantidade, apresentacao, status, observacao_admin)
+                   VALUES (%s, %s, %s, %s, %s, 'Pendente', %s)""",
+                (id_funcionario, id_material, obra.strip(), quantidade, apresentacao, observacao.strip() or None),
+            )
+            id_pedido = cursor.lastrowid
+            conexao.commit()
+            return id_pedido
+        except Exception:
+            if conexao:
+                conexao.rollback()
+            raise
+        finally:
+            if cursor:
+                cursor.close()
+            if conexao:
+                conexao.close()

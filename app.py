@@ -86,6 +86,22 @@ def primeiro_acesso_administrador():
 
 @app.route("/requisicao", methods=["GET", "POST"])
 def requisicao():
+    if session.get("usuario_tipo") != "Funcionario" or not session.get("usuario_id"):
+        return redirect(url_for("login"))
+    if request.method == "POST":
+        try:
+            id_pedido = User.pedir_material(
+                session["usuario_id"],
+                request.form.get("obra", ""),
+                int(request.form.get("material", "0")),
+                float(request.form.get("quantidade", "0").replace(",", ".")),
+                request.form.get("apresentacao", ""),
+                request.form.get("observacao", ""),
+            )
+            flash(f"Requisição #{id_pedido} enviada para análise.", "sucesso")
+            return redirect(url_for("requisicao"))
+        except (ValueError, TypeError) as error:
+            flash(str(error), "erro")
     return render_template("requisicao.html")
 
 @app.route("/administrador")
