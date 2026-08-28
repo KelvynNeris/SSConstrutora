@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requisitar material | SS Construtora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="request-page">
+    <header class="topbar request-topbar">
+        <a class="brand" href="/" aria-label="SS Construtora - inicio">
+            <span class="brand-mark">SS</span>
+            <span><strong>SS Construtora</strong><small>Gestao de obras</small></span>
+        </a>
+        <a class="login-link" href="/">Voltar ao inicio <span aria-hidden="true">-&gt;</span></a>
+    </header>
+
+    <main class="request-shell">
+        <div class="request-heading">
+            <div>
+                <p class="eyebrow">Solicitacao de material</p>
+                <h1>O que sua obra precisa?</h1>
+                <p>Preencha os dados abaixo. A requisicao sera enviada para avaliacao do responsavel.</p>
+            </div>
+            <div class="request-step"><strong>01</strong><span>de 02<br>nova requisicao</span></div>
+        </div>
+
+        <form class="request-form" method="post" action="{{ url_for('requisicao') }}">
+            <div class="request-block">
+                <span class="block-number">01</span>
+                <div class="block-content">
+                    <label for="obra">Em qual obra voce esta?</label>
+                    <select id="obra" name="obra" required>
+                        <option value="" selected disabled>Selecione a obra</option>
+                        <option value="jardim-sul">Residencial Jardim Sul</option>
+                        <option value="vila-nova">Reforma Vila Nova</option>
+                        <option value="centro">Comercial Centro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="request-block">
+                <span class="block-number">02</span>
+                <div class="block-content">
+                    <label for="material">Qual material esta faltando?</label>
+                    <select id="material" name="material" required>
+                        <option value="" selected disabled>Selecione o material</option>
+                        <option value="cimento">Cimento</option>
+                        <option value="areia">Areia</option>
+                        <option value="brita">Brita</option>
+                        <option value="tijolo">Tijolo</option>
+                        <option value="ferro">Ferro para construcao</option>
+                        <option value="prego">Prego</option>
+                        <option value="outro">Outro material</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="request-block request-details">
+                <span class="block-number">03</span>
+                <div class="block-content">
+                    <label>Como o material sera medido?</label>
+                    <div class="measurement-grid">
+                        <div>
+                            <label class="sub-label" for="apresentacao">Tipo de unidade</label>
+                            <select id="apresentacao" name="apresentacao" required>
+                                <option value="saco-20">Saco de 20 kg</option>
+                                <option value="saco-25" selected>Saco de 25 kg</option>
+                                <option value="saco-50">Saco de 50 kg</option>
+                                <option value="kg">Quilo (kg)</option>
+                                <option value="unidade">Unidade</option>
+                                <option value="caixa">Caixa</option>
+                                <option value="litro">Litro (L)</option>
+                                <option value="metro">Metro</option>
+                                <option value="metro-quadrado">Metro quadrado (m²)</option>
+                                <option value="metro-cubico">Metro cubico (m³)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="sub-label" for="quantidade">Quantidade</label>
+                            <input id="quantidade" name="quantidade" type="number" min="0.01" step="0.01" placeholder="0" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="request-block">
+                <span class="block-number">04</span>
+                <div class="block-content">
+                    <label for="observacao">Alguma observacao? <span class="optional">opcional</span></label>
+                    <textarea id="observacao" name="observacao" rows="3" placeholder="Ex.: material necessario para a etapa de fundacao..."></textarea>
+                </div>
+            </div>
+
+            <div class="request-actions">
+                <a class="text-link" href="/">Cancelar</a>
+                <button class="button button-primary" type="submit">Enviar requisicao <span aria-hidden="true">-&gt;</span></button>
+            </div>
+        </form>
+    </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

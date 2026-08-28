@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel administrativo | SS Construtora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="admin-page">
+    <header class="admin-topbar">
+        <a class="brand" href="/" aria-label="SS Construtora - inicio">
+            <span class="brand-mark">SS</span>
+            <span><strong>SS Construtora</strong><small>Gestao de obras</small></span>
+        </a>
+        <nav class="admin-nav" aria-label="Navegação principal">
+            <a class="active" href="{{ url_for('administrador') }}">Painel</a>
+            <a href="#requisicoes">Requisições</a>
+            <a href="#obras">Obras</a>
+            <a href="#estoque">Estoque</a>
+            <a href="{{ url_for('relatorio') }}">Relatórios</a>
+        </nav>
+        <div class="admin-user"><span class="user-avatar">{{ nome[:1]|upper }}</span><span>{{ nome }}</span><a href="/" aria-label="Sair">Sair</a></div>
+    </header>
+
+    <main class="admin-shell">
+        <section class="admin-heading">
+            <div>
+                <p class="eyebrow">Painel administrativo</p>
+                <h1>Bom dia, {{ nome.split()[0] }}.</h1>
+                <p>Acompanhe o movimento das obras e aprove as solicitações da equipe.</p>
+            </div>
+            <a class="button button-primary" href="{{ url_for('requisicao') }}">Nova requisição <span aria-hidden="true">+</span></a>
+        </section>
+
+        <section class="admin-stats" aria-label="Resumo do sistema">
+            <article class="stat-card stat-highlight"><span>Pedidos pendentes</span><strong>03</strong><small>precisam de sua análise</small></article>
+            <article class="stat-card"><span>Gastos este mês</span><strong>R$ 12.480</strong><small><b class="trend-up">+8,4%</b> contra o mês anterior</small></article>
+            <article class="stat-card"><span>Obras ativas</span><strong>04</strong><small>em andamento</small></article>
+            <article class="stat-card"><span>Itens em estoque</span><strong>128</strong><small>06 itens em nível baixo</small></article>
+        </section>
+
+        <section class="admin-content-grid">
+            <div class="admin-panel" id="requisicoes">
+                <div class="panel-heading"><div><p class="eyebrow">Ação necessária</p><h2>Requisições recentes</h2></div><a href="#requisicoes">Ver todas <span aria-hidden="true">-&gt;</span></a></div>
+                <div class="request-list">
+                    <article class="admin-request"><span class="request-initial">MS</span><div><strong>Marcos Silva</strong><p>10 sacos de cimento · Jardim Sul</p></div><time>há 12 min</time><button type="button" class="approve-button" data-request-id="1" data-requester="Marcos Silva" data-material="Cimento" data-quantity="10 sacos de 50 kg" data-work="Residencial Jardim Sul" data-date="28/08/2026">Analisar</button></article>
+                    <article class="admin-request"><span class="request-initial request-initial-sage">RA</span><div><strong>Rafael Alves</strong><p>500 unidades de tijolo · Vila Nova</p></div><time>há 38 min</time><button type="button" class="approve-button" data-request-id="2" data-requester="Rafael Alves" data-material="Tijolo cerâmico" data-quantity="500 unidades" data-work="Reforma Vila Nova" data-date="27/08/2026">Analisar</button></article>
+                    <article class="admin-request"><span class="request-initial request-initial-sand">JC</span><div><strong>João Costa</strong><p>15 kg de prego · Comercial Centro</p></div><time>há 1 h</time><button type="button" class="approve-button" data-request-id="3" data-requester="João Costa" data-material="Prego comum" data-quantity="15 kg" data-work="Comercial Centro" data-date="26/08/2026">Analisar</button></article>
+                </div>
+            </div>
+
+            <div class="admin-panel" id="obras">
+                <div class="panel-heading"><div><p class="eyebrow">Visão geral</p><h2>Obras ativas</h2></div><a href="#obras">Detalhes <span aria-hidden="true">-&gt;</span></a></div>
+                <div class="work-list"><div><span>Residencial Jardim Sul</span><b>68%</b><i><em style="width: 68%"></em></i></div><div><span>Reforma Vila Nova</span><b>42%</b><i><em style="width: 42%"></em></i></div><div><span>Comercial Centro</span><b>24%</b><i><em style="width: 24%"></em></i></div></div>
+            </div>
+        </section>
+    </main>
+    <div class="modal-backdrop" id="request-modal" aria-hidden="true">
+        <section class="request-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <button class="modal-close" type="button" aria-label="Fechar análise">&times;</button>
+            <p class="eyebrow">Análise de requisição</p>
+            <h2 id="modal-title">Detalhes do pedido</h2>
+            <div class="modal-request-summary"><strong id="modal-material">Material</strong><span id="modal-quantity">Quantidade</span><span id="modal-work">Obra</span><span id="modal-requester">Funcionário</span><span id="modal-date">Data</span></div>
+            <form class="modal-form" method="post" id="request-update-form">
+                <div><label for="modal-status">Atualizar status</label><select id="modal-status" name="status"><option>Pendente</option><option>Aprovado</option><option>Recusado</option><option>Atendido</option></select></div>
+                <div><label for="modal-value">Valor pago (R$)</label><input id="modal-value" name="valor_pago" type="number" min="0" step="0.01" placeholder="Ex.: 420,00"></div>
+                <div><label for="modal-store">Loja fornecedora</label><input id="modal-store" name="loja" type="text" placeholder="Nome da loja onde foi comprado"></div>
+                <div class="modal-actions"><button class="text-link modal-cancel" type="button">Cancelar</button><button class="button button-primary" type="submit">Salvar análise <span aria-hidden="true">-&gt;</span></button></div>
+            </form>
+        </section>
+    </div>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

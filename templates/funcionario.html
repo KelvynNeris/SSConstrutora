@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do funcionário | SS Construtora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="employee-page">
+    <header class="admin-topbar employee-topbar">
+        <a class="brand" href="/" aria-label="SS Construtora - início">
+            <span class="brand-mark">SS</span>
+            <span><strong>SS Construtora</strong><small>Gestão de obras</small></span>
+        </a>
+        <nav class="admin-nav" aria-label="Navegação principal">
+            <a class="active" href="{{ url_for('funcionario') }}">Meu painel</a>
+            <a href="{{ url_for('requisicao') }}">Nova requisição</a>
+            <a href="#pedidos">Meus pedidos</a>
+        </nav>
+        <div class="admin-user"><span class="user-avatar employee-avatar">{{ nome[:1]|upper }}</span><span>{{ nome }}</span><a href="/" aria-label="Sair">Sair</a></div>
+    </header>
+
+    <main class="employee-shell">
+        <section class="employee-heading">
+            <div>
+                <p class="eyebrow">Área do funcionário</p>
+                <h1>Olá, {{ nome.split()[0] }}.</h1>
+                <p>Confira os pedidos da sua equipe e solicite os materiais necessários para continuar a obra.</p>
+            </div>
+            <a class="button button-primary" href="{{ url_for('requisicao') }}">Pedir material <span aria-hidden="true">+</span></a>
+        </section>
+
+        <section class="employee-workbar">
+            <div><span>Obra em andamento</span><strong>Residencial Jardim Sul</strong></div>
+            <div><span>Responsável</span><strong>Mestre Marcos Silva</strong></div>
+            <div><span>Status</span><strong class="work-status"><i></i> Ativa</strong></div>
+        </section>
+
+        <section class="employee-stats" aria-label="Resumo dos pedidos">
+            <article class="employee-stat stat-highlight"><span>Pedidos em análise</span><strong>02</strong><small>Aguardando o administrador</small></article>
+            <article class="employee-stat"><span>Pedidos aprovados</span><strong>08</strong><small>nesta obra</small></article>
+            <article class="employee-stat"><span>Materiais recebidos</span><strong>24</strong><small>nos últimos 30 dias</small></article>
+        </section>
+
+        <section class="employee-content" id="pedidos">
+            <div class="admin-panel employee-panel">
+                <div class="panel-heading"><div><p class="eyebrow">Acompanhamento</p><h2>Meus pedidos recentes</h2></div><a href="#pedidos">Ver histórico <span aria-hidden="true">-&gt;</span></a></div>
+                <div class="employee-request-list">
+                    <article class="employee-request"><div><strong>Cimento</strong><p>10 sacos de 50 kg · enviado hoje</p></div><span class="request-status pending-status">Em análise</span></article>
+                    <article class="employee-request"><div><strong>Tijolo cerâmico</strong><p>500 unidades · enviado ontem</p></div><span class="request-status approved-status">Aprovado</span></article>
+                    <article class="employee-request"><div><strong>Prego comum</strong><p>15 kg · recebido em 22/08</p></div><span class="request-status delivered-status">Recebido</span></article>
+                </div>
+            </div>
+            <aside class="employee-tip">
+                <span class="tip-label">Dica da obra</span>
+                <h2>Descreva onde o material será usado.</h2>
+                <p>Uma observação detalhada ajuda o administrador a analisar sua solicitação mais rápido.</p>
+                <a class="text-link" href="{{ url_for('requisicao') }}">Fazer uma requisição <span aria-hidden="true">-&gt;</span></a>
+            </aside>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

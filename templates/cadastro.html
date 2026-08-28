@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro | SS Construtora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-page">
+    <main class="auth-layout auth-layout-reverse">
+        <section class="auth-intro">
+            <a class="brand auth-brand" href="/" aria-label="Voltar para o inicio">
+                <span class="brand-mark">SS</span>
+                <span><strong>SS Construtora</strong><small>Gestao de obras</small></span>
+            </a>
+            <div class="auth-message">
+                <p class="eyebrow">Nova equipe</p>
+                <h1>Vamos colocar<br><em>a obra em ordem.</em></h1>
+                <p>Crie seu acesso para enviar requisicoes e acompanhar cada etapa do abastecimento.</p>
+            </div>
+            <span class="auth-number">02 / 02</span>
+        </section>
+        <section class="auth-form-area">
+            <div class="form-heading">
+                <p class="eyebrow">Primeiro acesso</p>
+                <h2>Criar cadastro</h2>
+                <p>Preencha seus dados para fazer parte da equipe.</p>
+            </div>
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}<div class="form-alert" role="alert">{{ mensagens[0][1] }}</div>{% endif %}
+            {% endwith %}
+            <form class="auth-form" method="post" action="{{ url_for('cadastro') }}">
+                <label for="nome">Nome completo</label>
+                <input id="nome" name="nome" type="text" autocomplete="name" placeholder="Digite seu nome completo" required>
+
+                <label for="telefone">Número de telefone</label>
+                <input id="telefone" name="telefone" type="tel" autocomplete="tel" placeholder="(00) 00000-0000" required>
+
+                <label for="email">E-mail</label>
+                <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required>
+
+                <label for="senha">Senha</label>
+                <input id="senha" name="senha" type="password" autocomplete="new-password" minlength="6" placeholder="Crie uma senha com pelo menos 6 caracteres" required>
+
+                <label for="confirmar_senha">Confirmar senha</label>
+                <input id="confirmar_senha" name="confirmar_senha" type="password" autocomplete="new-password" minlength="6" placeholder="Digite a senha novamente" oninput="this.setCustomValidity(this.value !== document.getElementById('senha').value ? 'As senhas não coincidem.' : '')" required>
+
+                <button class="button button-primary form-submit" type="submit">Continuar cadastro <span aria-hidden="true">-&gt;</span></button>
+            </form>
+            <p class="form-footer">Já possui uma conta? <a href="{{ url_for('login') }}">Entrar no sistema</a></p>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

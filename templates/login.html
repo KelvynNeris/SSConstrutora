@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | SS Construtora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-page">
+    <main class="auth-layout">
+        <section class="auth-intro">
+            <a class="brand auth-brand" href="/" aria-label="Voltar para o inicio">
+                <span class="brand-mark">SS</span>
+                <span><strong>SS Construtora</strong><small>Gestao de obras</small></span>
+            </a>
+            <div class="auth-message">
+                <p class="eyebrow">Acesso da equipe</p>
+                <h1>Bom ter voce<br><em>de volta.</em></h1>
+                <p>Entre para acompanhar materiais, pedidos e os gastos da sua obra em um só lugar.</p>
+            </div>
+            <span class="auth-number">01 / 02</span>
+        </section>
+        <section class="auth-form-area">
+            <div class="form-heading">
+                <p class="eyebrow">Acessar sistema</p>
+                <h2>Entrar na conta</h2>
+                <p>Use seus dados cadastrados para continuar.</p>
+            </div>
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}<div class="form-alert" role="alert">{{ mensagens[0][1] }}</div>{% endif %}
+            {% endwith %}
+            <form class="auth-form" method="post" action="{{ url_for('login') }}">
+                <label for="nome">Nome completo</label>
+                <input id="nome" name="nome" type="text" autocomplete="name" placeholder="Como aparece no cadastro" required>
+
+                <label for="telefone">Número de telefone</label>
+                <input id="telefone" name="telefone" type="tel" autocomplete="tel" placeholder="(00) 00000-0000" required>
+
+                <label for="senha">Senha</label>
+                <input id="senha" name="senha" type="password" autocomplete="current-password" placeholder="Digite sua senha" required>
+
+                <button class="button button-primary form-submit" type="submit">Entrar <span aria-hidden="true">-&gt;</span></button>
+            </form>
+            <p class="form-footer">Ainda não tem cadastro? <a href="{{ url_for('cadastro') }}">Criar uma conta</a></p>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
