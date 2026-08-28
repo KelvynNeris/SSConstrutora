@@ -88,6 +88,8 @@ def primeiro_acesso_administrador():
 def requisicao():
     if session.get("usuario_tipo") != "Funcionario" or not session.get("usuario_id"):
         return redirect(url_for("login"))
+    obras = User.listar_obras_ativas()
+    materiais = User.listar_materiais_ativos()
     if request.method == "POST":
         try:
             id_pedido = User.pedir_material(
@@ -102,7 +104,7 @@ def requisicao():
             return redirect(url_for("requisicao"))
         except (ValueError, TypeError) as error:
             flash(str(error), "erro")
-    return render_template("requisicao.html")
+    return render_template("requisicao.html", obras=obras, materiais=materiais)
 
 @app.route("/administrador")
 def administrador():
@@ -192,7 +194,15 @@ def relatorio():
         "obra": request.args.get("obra", "todas"),
         "funcionario": request.args.get("funcionario", "todos")
     }
-    return render_template("relatorio.html", nome=session.get("usuario_nome", "Administrador"), filtros=filtros)
+    dados_relatorio = Administrador.obter_relatorio(filtros)
+    return render_template(
+        "relatorio.html",
+        nome=session.get("usuario_nome", "Administrador"),
+        filtros=filtros,
+        obras=Administrador.listar_obras_ativas(),
+        funcionarios=Administrador.listar_funcionarios(),
+        **dados_relatorio,
+    )
 
 @app.route("/funcionario")
 def funcionario():
@@ -205,12 +215,14 @@ def funcionario():
         "recebidos": sum(pedido["status"] == "Atendido" for pedido in pedidos),
     }
     obra = pedidos[0]["obra"] if pedidos else "Nenhuma obra cadastrada"
+    obra_info = User.buscar_obra(obra) if pedidos else None
     return render_template(
         "funcionario.html",
         nome=session.get("usuario_nome", "Funcionário"),
         pedidos=pedidos,
         resumo=resumo,
         obra=obra,
+        responsavel=(obra_info or {}).get("responsavel") or "Responsável não informado",
     )
 
 if __name__ == "__main__":

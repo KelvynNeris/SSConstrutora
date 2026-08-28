@@ -209,3 +209,61 @@ class User:
                 cursor.close()
             if conexao:
                 conexao.close()
+
+    @staticmethod
+    def listar_obras_ativas():
+        """Retorna as obras ativas disponíveis para requisições."""
+        conexao = None
+        cursor = None
+        try:
+            conexao = Conexao.conectar()
+            cursor = conexao.cursor(dictionary=True)
+            cursor.execute(
+                """SELECT id_obra, nome, endereco, responsavel
+                   FROM tb_obras WHERE ativa = TRUE ORDER BY nome"""
+            )
+            return cursor.fetchall()
+        finally:
+            if cursor:
+                cursor.close()
+            if conexao:
+                conexao.close()
+
+    @staticmethod
+    def listar_materiais_ativos():
+        """Retorna os materiais ativos disponíveis para requisições."""
+        conexao = None
+        cursor = None
+        try:
+            conexao = Conexao.conectar()
+            cursor = conexao.cursor(dictionary=True)
+            cursor.execute(
+                """SELECT id_material, nome, unidade
+                   FROM tb_materiais WHERE ativo = TRUE ORDER BY nome"""
+            )
+            return cursor.fetchall()
+        finally:
+            if cursor:
+                cursor.close()
+            if conexao:
+                conexao.close()
+
+    @staticmethod
+    def buscar_obra(nome):
+        """Busca os dados da obra ativa pelo nome salvo no pedido."""
+        conexao = None
+        cursor = None
+        try:
+            conexao = Conexao.conectar()
+            cursor = conexao.cursor(dictionary=True)
+            cursor.execute(
+                """SELECT nome, responsavel FROM tb_obras
+                   WHERE nome = %s AND ativa = TRUE LIMIT 1""",
+                (nome,),
+            )
+            return cursor.fetchone()
+        finally:
+            if cursor:
+                cursor.close()
+            if conexao:
+                conexao.close()

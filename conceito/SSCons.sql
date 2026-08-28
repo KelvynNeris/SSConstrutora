@@ -54,7 +54,7 @@ CREATE TABLE tb_pedidos (
 
 -- Usuário administrador inicial (exemplo de código: 1234)
 INSERT INTO tb_usuarios (nome, email, senha, telefone, tipo_usuario, codigo_confirmacao, primeiro_login)
-VALUES ('Administrador Master', 'adm@adm.com', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', '123456789', 'Administrador', '1234', TRUE);
+VALUES ('Administrador Master', 'adm@adm.com', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', '12345678910', 'Administrador', '1234', TRUE);
 
 -- Exemplo de material inicial
 INSERT INTO tb_materiais (nome, descricao, unidade, quantidade_estoque)

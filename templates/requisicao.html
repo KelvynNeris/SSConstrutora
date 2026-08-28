@@ -35,9 +35,7 @@
                     <label for="obra">Em qual obra voce esta?</label>
                     <select id="obra" name="obra" required>
                         <option value="" selected disabled>Selecione a obra</option>
-                        <option value="jardim-sul">Residencial Jardim Sul</option>
-                        <option value="vila-nova">Reforma Vila Nova</option>
-                        <option value="centro">Comercial Centro</option>
+                        {% for obra in obras %}<option value="{{ obra.nome }}">{{ obra.nome }}</option>{% endfor %}
                     </select>
                 </div>
             </div>
@@ -48,13 +46,7 @@
                     <label for="material">Qual material esta faltando?</label>
                     <select id="material" name="material" required>
                         <option value="" selected disabled>Selecione o material</option>
-                        <option value="2">Cimento CP-II</option>
-                        <option value="4">Areia média</option>
-                        <option value="5">Brita 1</option>
-                        <option value="3">Tijolo cerâmico</option>
-                        <option value="6">Ferro 10 mm</option>
-                        <option value="1">Prego</option>
-                        <option value="outro">Outro material</option>
+                        {% for material in materiais %}<option value="{{ material.id_material }}">{{ material.nome }}</option>{% endfor %}
                     </select>
                 </div>
             </div>

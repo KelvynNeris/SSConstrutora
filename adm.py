@@ -3,6 +3,80 @@ from conexao import Conexao
 
 class Administrador:
 	@staticmethod
+	def listar_funcionarios():
+		"""Retorna funcionários aprovados para filtros administrativos."""
+		conexao = None
+		cursor = None
+		try:
+			conexao = Conexao.conectar()
+			cursor = conexao.cursor(dictionary=True)
+			cursor.execute(
+				"""SELECT id_usuario, nome FROM tb_usuarios
+				   WHERE tipo_usuario = 'Funcionario' AND aprovado = TRUE
+				   ORDER BY nome"""
+			)
+			return cursor.fetchall()
+		finally:
+			if cursor:
+				cursor.close()
+			if conexao:
+				conexao.close()
+
+	@staticmethod
+	def obter_relatorio(filtros):
+		"""Busca pedidos e indicadores do relatório conforme os filtros informados."""
+		conexao = None
+		cursor = None
+		try:
+			conexao = Conexao.conectar()
+			cursor = conexao.cursor(dictionary=True)
+			condicoes = []
+			parametros = []
+			if filtros.get("inicio"):
+				condicoes.append("DATE(p.data_pedido) >= %s")
+				parametros.append(filtros["inicio"])
+			if filtros.get("fim"):
+				condicoes.append("DATE(p.data_pedido) <= %s")
+				parametros.append(filtros["fim"])
+			if filtros.get("obra") and filtros["obra"] != "todas":
+				condicoes.append("p.obra = %s")
+				parametros.append(filtros["obra"])
+			if filtros.get("funcionario") and filtros["funcionario"] != "todos":
+				condicoes.append("p.id_funcionario = %s")
+				parametros.append(int(filtros["funcionario"]))
+			where = f"WHERE {' AND '.join(condicoes)}" if condicoes else ""
+			cursor.execute(
+				f"""SELECT p.id_pedido, p.obra, p.quantidade, p.apresentacao,
+							p.status, p.data_pedido, p.valor_pago,
+							m.nome AS material_nome, u.nome AS funcionario_nome
+					 FROM tb_pedidos p
+					 INNER JOIN tb_materiais m ON m.id_material = p.id_material
+					 INNER JOIN tb_usuarios u ON u.id_usuario = p.id_funcionario
+					 {where} ORDER BY p.data_pedido DESC""",
+				parametros,
+			)
+			pedidos = cursor.fetchall()
+			gasto_por_obra = {}
+			for pedido in pedidos:
+				gasto_por_obra[pedido["obra"]] = gasto_por_obra.get(pedido["obra"], 0) + float(pedido["valor_pago"] or 0)
+			maior_obra = max(gasto_por_obra, key=gasto_por_obra.get) if gasto_por_obra else "Sem dados"
+			quantidade_aprovada = sum(pedido["status"] in ("Aprovado", "Atendido") for pedido in pedidos)
+			return {
+				"pedidos_relatorio": pedidos,
+				"resumo_relatorio": {
+					"gasto": sum(float(pedido["valor_pago"] or 0) for pedido in pedidos),
+					"quantidade": sum(float(pedido["quantidade"] or 0) for pedido in pedidos),
+					"maior_obra": maior_obra,
+					"percentual_aprovado": round(quantidade_aprovada / len(pedidos) * 100) if pedidos else 0,
+					"total": len(pedidos),
+				},
+			}
+		finally:
+			if cursor:
+				cursor.close()
+			if conexao:
+				conexao.close()
+	@staticmethod
 	def listar_obras_ativas():
 		"""Retorna somente obras ativas para exibição no painel."""
 		conexao = None

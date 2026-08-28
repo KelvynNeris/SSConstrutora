@@ -35,16 +35,16 @@
             <div class="filter-title"><span>01</span><strong>Filtrar dados</strong></div>
             <div class="filter-field"><label for="inicio">Data inicial</label><input id="inicio" name="inicio" type="date" value="{{ filtros.inicio }}"></div>
             <div class="filter-field"><label for="fim">Data final</label><input id="fim" name="fim" type="date" value="{{ filtros.fim }}"></div>
-            <div class="filter-field"><label for="obra">Obra</label><select id="obra" name="obra"><option value="todas" {% if filtros.obra == 'todas' %}selected{% endif %}>Todas as obras</option><option value="jardim-sul" {% if filtros.obra == 'jardim-sul' %}selected{% endif %}>Residencial Jardim Sul</option><option value="vila-nova" {% if filtros.obra == 'vila-nova' %}selected{% endif %}>Reforma Vila Nova</option><option value="centro" {% if filtros.obra == 'centro' %}selected{% endif %}>Comercial Centro</option></select></div>
-            <div class="filter-field"><label for="funcionario">Funcionário</label><select id="funcionario" name="funcionario"><option value="todos" {% if filtros.funcionario == 'todos' %}selected{% endif %}>Todos os funcionários</option><option value="marcos-silva" {% if filtros.funcionario == 'marcos-silva' %}selected{% endif %}>Marcos Silva</option><option value="rafael-alves" {% if filtros.funcionario == 'rafael-alves' %}selected{% endif %}>Rafael Alves</option><option value="joao-costa" {% if filtros.funcionario == 'joao-costa' %}selected{% endif %}>João Costa</option></select></div>
+            <div class="filter-field"><label for="obra">Obra</label><select id="obra" name="obra"><option value="todas" {% if filtros.obra == 'todas' %}selected{% endif %}>Todas as obras</option>{% for obra in obras %}<option value="{{ obra.nome }}" {% if filtros.obra == obra.nome %}selected{% endif %}>{{ obra.nome }}</option>{% endfor %}</select></div>
+            <div class="filter-field"><label for="funcionario">Funcionário</label><select id="funcionario" name="funcionario"><option value="todos" {% if filtros.funcionario == 'todos' %}selected{% endif %}>Todos os funcionários</option>{% for funcionario in funcionarios %}<option value="{{ funcionario.id_usuario }}" {% if filtros.funcionario == funcionario.id_usuario|string %}selected{% endif %}>{{ funcionario.nome }}</option>{% endfor %}</select></div>
             <button class="button button-primary filter-button" type="submit">Gerar relatório <span aria-hidden="true">-&gt;</span></button>
         </form>
 
         <section class="report-summary" aria-label="Resumo do relatório">
-            <article><span>Total requisitado</span><strong>R$ 18.645,50</strong><small>14 pedidos no período</small></article>
-            <article><span>Materiais solicitados</span><strong>1.286</strong><small>unidades e medidas variadas</small></article>
-            <article><span>Obra com maior gasto</span><strong>Jardim Sul</strong><small>R$ 9.240,00 no período</small></article>
-            <article><span>Pedidos aprovados</span><strong>86%</strong><small>12 de 14 pedidos</small></article>
+            <article><span>Total gasto</span><strong>R$ {{ '%.2f'|format(resumo_relatorio.gasto) }}</strong><small>{{ resumo_relatorio.total }} pedidos no período</small></article>
+            <article><span>Materiais solicitados</span><strong>{{ '%.2f'|format(resumo_relatorio.quantidade) }}</strong><small>quantidade total requisitada</small></article>
+            <article><span>Obra com maior gasto</span><strong>{{ resumo_relatorio.maior_obra }}</strong><small>maior valor registrado</small></article>
+            <article><span>Pedidos aprovados</span><strong>{{ resumo_relatorio.percentual_aprovado }}%</strong><small>aprovados ou atendidos</small></article>
         </section>
 
         <section class="report-table-panel">
@@ -52,12 +52,7 @@
             <div class="table-wrap">
                 <table>
                     <thead><tr><th>Data</th><th>Material</th><th>Quantidade</th><th>Obra</th><th>Funcionário</th><th>Valor</th><th>Status</th></tr></thead>
-                    <tbody>
-                        <tr><td>28/08/2026</td><td><strong>Cimento</strong><small>Saco de 50 kg</small></td><td>10 sacos</td><td>Jardim Sul</td><td>Marcos Silva</td><td>R$ 420,00</td><td><span class="table-status status-approved">Aprovado</span></td></tr>
-                        <tr><td>27/08/2026</td><td><strong>Tijolo cerâmico</strong><small>Unidade</small></td><td>500 un.</td><td>Vila Nova</td><td>Rafael Alves</td><td>R$ 1.150,00</td><td><span class="table-status status-pending">Pendente</span></td></tr>
-                        <tr><td>26/08/2026</td><td><strong>Prego comum</strong><small>Quilo (kg)</small></td><td>15 kg</td><td>Comercial Centro</td><td>João Costa</td><td>R$ 186,50</td><td><span class="table-status status-delivered">Atendido</span></td></tr>
-                        <tr><td>25/08/2026</td><td><strong>Areia média</strong><small>Saco de 25 kg</small></td><td>30 sacos</td><td>Jardim Sul</td><td>Marcos Silva</td><td>R$ 870,00</td><td><span class="table-status status-approved">Aprovado</span></td></tr>
-                    </tbody>
+                    <tbody>{% for pedido in pedidos_relatorio %}<tr><td>{{ pedido.data_pedido.strftime('%d/%m/%Y') }}</td><td><strong>{{ pedido.material_nome }}</strong><small>{{ pedido.apresentacao }}</small></td><td>{{ pedido.quantidade }}</td><td>{{ pedido.obra }}</td><td>{{ pedido.funcionario_nome }}</td><td>{% if pedido.valor_pago is not none %}R$ {{ '%.2f'|format(pedido.valor_pago) }}{% else %}-{% endif %}</td><td><span class="table-status {% if pedido.status == 'Pendente' %}status-pending{% elif pedido.status == 'Atendido' %}status-delivered{% else %}status-approved{% endif %}">{{ pedido.status }}</span></td></tr>{% else %}<tr><td colspan="7"><div class="empty-state"><strong>Nenhum pedido encontrado</strong><p>Ajuste os filtros ou aguarde novas requisições.</p></div></td></tr>{% endfor %}</tbody>
                 </table>
             </div>
         </section>
