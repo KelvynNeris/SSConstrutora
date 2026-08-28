@@ -17,7 +17,7 @@
             <a href="{{ url_for('requisicao') }}">Nova requisição</a>
             <a href="#pedidos">Meus pedidos</a>
         </nav>
-        <div class="admin-user"><span class="user-avatar employee-avatar">{{ nome[:1]|upper }}</span><span>{{ nome }}</span><a href="/" aria-label="Sair">Sair</a></div>
+        <div class="admin-user"><span class="user-avatar employee-avatar">{{ nome[:1]|upper }}</span><span>{{ nome }}</span><a href="{{ url_for('logout') }}" aria-label="Sair">Sair</a></div>
     </header>
 
     <main class="employee-shell">

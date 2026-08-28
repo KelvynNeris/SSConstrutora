@@ -17,7 +17,7 @@
             <a class="active" href="{{ url_for('cadastros_pendentes') }}">Cadastros pendentes</a>
             <a href="{{ url_for('relatorio') }}">Relatórios</a>
         </nav>
-        <div class="admin-user"><span class="user-avatar">{{ nome[:1]|upper }}</span><span>{{ nome }}</span><a href="/" aria-label="Sair">Sair</a></div>
+        <div class="admin-user"><span class="user-avatar">{{ nome[:1]|upper }}</span><span>{{ nome }}</span><a href="{{ url_for('logout') }}" aria-label="Sair">Sair</a></div>
     </header>
 
     <main class="admin-shell pending-users-shell">

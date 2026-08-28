@@ -36,6 +36,11 @@ def login():
         flash(usuario.erro, "erro")
     return render_template("login.html")
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("inicio"))
+
 @app.route("/cadastro", methods=["GET", "POST"])
 def cadastro():
     if request.method == "POST":

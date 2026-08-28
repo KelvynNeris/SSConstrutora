@@ -18,7 +18,7 @@
             <a href="#obras">Obras</a>
             <a href="#estoque">Estoque</a>
         </nav>
-        <div class="admin-user"><span class="user-avatar">{{ nome[:1]|upper }}</span><span>{{ nome }}</span><a href="/" aria-label="Sair">Sair</a></div>
+        <div class="admin-user"><span class="user-avatar">{{ nome[:1]|upper }}</span><span>{{ nome }}</span><a href="{{ url_for('logout') }}" aria-label="Sair">Sair</a></div>
     </header>
 
     <main class="report-shell">
