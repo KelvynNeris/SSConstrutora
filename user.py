@@ -184,3 +184,28 @@ class User:
                 cursor.close()
             if conexao:
                 conexao.close()
+
+    @staticmethod
+    def listar_pedidos(id_funcionario):
+        """Retorna as requisições do funcionário com os dados do material."""
+        conexao = None
+        cursor = None
+        try:
+            conexao = Conexao.conectar()
+            cursor = conexao.cursor(dictionary=True)
+            cursor.execute(
+                """SELECT p.id_pedido, p.obra, p.quantidade, p.apresentacao,
+                          p.status, p.data_pedido, p.valor_pago,
+                          m.nome AS material_nome
+                   FROM tb_pedidos p
+                   INNER JOIN tb_materiais m ON m.id_material = p.id_material
+                   WHERE p.id_funcionario = %s
+                   ORDER BY p.data_pedido DESC""",
+                (id_funcionario,),
+            )
+            return cursor.fetchall()
+        finally:
+            if cursor:
+                cursor.close()
+            if conexao:
+                conexao.close()

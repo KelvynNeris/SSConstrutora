@@ -143,7 +143,22 @@ def relatorio():
 
 @app.route("/funcionario")
 def funcionario():
-    return render_template("funcionario.html", nome=session.get("usuario_nome", "Funcionário"))
+    if session.get("usuario_tipo") != "Funcionario" or not session.get("usuario_id"):
+        return redirect(url_for("login"))
+    pedidos = User.listar_pedidos(session["usuario_id"])
+    resumo = {
+        "analise": sum(pedido["status"] == "Pendente" for pedido in pedidos),
+        "aprovados": sum(pedido["status"] == "Aprovado" for pedido in pedidos),
+        "recebidos": sum(pedido["status"] == "Atendido" for pedido in pedidos),
+    }
+    obra = pedidos[0]["obra"] if pedidos else "Nenhuma obra cadastrada"
+    return render_template(
+        "funcionario.html",
+        nome=session.get("usuario_nome", "Funcionário"),
+        pedidos=pedidos,
+        resumo=resumo,
+        obra=obra,
+    )
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8080)  # Define o host como localhost e a porta como 8080

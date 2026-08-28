@@ -6,7 +6,7 @@
     <title>Painel do funcionário | SS Construtora</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="employee-page">
+<body class="employee-page" data-auto-refresh="10000">
     <header class="admin-topbar employee-topbar">
         <a class="brand" href="/" aria-label="SS Construtora - início">
             <span class="brand-mark">SS</span>
@@ -31,24 +31,26 @@
         </section>
 
         <section class="employee-workbar">
-            <div><span>Obra em andamento</span><strong>Residencial Jardim Sul</strong></div>
+            <div><span>Obra em andamento</span><strong>{{ obra }}</strong></div>
             <div><span>Responsável</span><strong>Mestre Marcos Silva</strong></div>
             <div><span>Status</span><strong class="work-status"><i></i> Ativa</strong></div>
         </section>
 
         <section class="employee-stats" aria-label="Resumo dos pedidos">
-            <article class="employee-stat stat-highlight"><span>Pedidos em análise</span><strong>02</strong><small>Aguardando o administrador</small></article>
-            <article class="employee-stat"><span>Pedidos aprovados</span><strong>08</strong><small>nesta obra</small></article>
-            <article class="employee-stat"><span>Materiais recebidos</span><strong>24</strong><small>nos últimos 30 dias</small></article>
+            <article class="employee-stat stat-highlight"><span>Pedidos em análise</span><strong>{{ resumo.analise }}</strong><small>Aguardando o administrador</small></article>
+            <article class="employee-stat"><span>Pedidos aprovados</span><strong>{{ resumo.aprovados }}</strong><small>em todas as suas obras</small></article>
+            <article class="employee-stat"><span>Materiais recebidos</span><strong>{{ resumo.recebidos }}</strong><small>pedidos atendidos</small></article>
         </section>
 
         <section class="employee-content" id="pedidos">
             <div class="admin-panel employee-panel">
                 <div class="panel-heading"><div><p class="eyebrow">Acompanhamento</p><h2>Meus pedidos recentes</h2></div><a href="#pedidos">Ver histórico <span aria-hidden="true">-&gt;</span></a></div>
                 <div class="employee-request-list">
-                    <article class="employee-request"><div><strong>Cimento</strong><p>10 sacos de 50 kg · enviado hoje</p></div><span class="request-status pending-status">Em análise</span></article>
-                    <article class="employee-request"><div><strong>Tijolo cerâmico</strong><p>500 unidades · enviado ontem</p></div><span class="request-status approved-status">Aprovado</span></article>
-                    <article class="employee-request"><div><strong>Prego comum</strong><p>15 kg · recebido em 22/08</p></div><span class="request-status delivered-status">Recebido</span></article>
+                    {% for pedido in pedidos %}
+                        <article class="employee-request"><div><strong>{{ pedido.material_nome }}</strong><p>{{ pedido.quantidade }} {{ pedido.apresentacao }} · {{ pedido.obra }} · {{ pedido.data_pedido.strftime('%d/%m/%Y') }}</p></div><span class="request-status {% if pedido.status == 'Pendente' %}pending-status{% elif pedido.status == 'Aprovado' %}approved-status{% elif pedido.status == 'Atendido' %}delivered-status{% else %}rejected-status{% endif %}">{{ pedido.status }}</span></article>
+                    {% else %}
+                        <div class="empty-state"><strong>Nenhum pedido encontrado</strong><p>Faça sua primeira requisição de material para a obra.</p></div>
+                    {% endfor %}
                 </div>
             </div>
             <aside class="employee-tip">
