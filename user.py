@@ -4,6 +4,7 @@ from random import randint
 import re
 
 from conexao import Conexao
+from email_service import enviar_email_admin
 
 
 class User:
@@ -173,7 +174,28 @@ class User:
                 (id_funcionario, id_material, obra.strip(), quantidade, apresentacao, observacao.strip() or None),
             )
             id_pedido = cursor.lastrowid
+
+            cursor.execute(
+                """SELECT u.nome AS funcionario_nome, m.nome AS material_nome, m.unidade
+                   FROM tb_usuarios u
+                   CROSS JOIN tb_materiais m
+                   WHERE u.id_usuario = %s AND m.id_material = %s""",
+                (id_funcionario, id_material),
+            )
+            dados_pedido = cursor.fetchone()
+
             conexao.commit()
+
+            if dados_pedido:
+                enviar_email_admin(
+                    id_pedido=id_pedido,
+                    nome_funcionario=dados_pedido[0],
+                    nome_obra=obra.strip(),
+                    material=dados_pedido[1],
+                    quantidade=quantidade,
+                    unidade=dados_pedido[2] or "unidade",
+                )
+
             return id_pedido
         except Exception:
             if conexao:
