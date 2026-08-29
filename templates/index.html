@@ -8,6 +8,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+            <div class="flash-bar">
+                {% for categoria, mensagem in mensagens %}
+                    <div class="form-alert {{ categoria }}" role="alert">{{ mensagem }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
     <header class="topbar">
         <a class="brand" href="/" aria-label="SS Construtora - inicio">
             <span class="brand-mark">SS</span>

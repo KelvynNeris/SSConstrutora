@@ -48,6 +48,17 @@ def enviar_email_admin(id_pedido, nome_funcionario, nome_obra, material, quantid
     return _enviar_email(admin_email, assunto, corpo)
 
 
+def enviar_email_codigo_confirmacao(email_destino, codigo):
+    """Envia o código de confirmação do cadastro para o e-mail informado."""
+    assunto = "Confirme seu cadastro na SS Construtora"
+    corpo = (
+        "Seu código de confirmação é: "
+        f"{codigo}\n\n"
+        "Use este código para concluir o cadastro na plataforma da SS Construtora."
+    )
+    return _enviar_email(email_destino, assunto, corpo)
+
+
 def enviar_email_funcionario(id_pedido, nome_funcionario, email_funcionario, nome_obra, material, quantidade, status, unidade="unidade", observacao=None):
     """Envia uma atualização da requisição para o funcionário responsável."""
     status_legivel = {

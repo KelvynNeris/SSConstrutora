@@ -4,7 +4,7 @@ from random import randint
 import re
 
 from conexao import Conexao
-from email_service import enviar_email_admin
+from email_service import enviar_email_admin, enviar_email_codigo_confirmacao
 
 
 class User:
@@ -29,7 +29,24 @@ class User:
     def _normalizar_telefone(telefone):
         return re.sub(r"\D", "", telefone)
 
-    def cadastrar(self, nome, telefone, email, senha, tipo="Funcionario"):
+    def gerar_codigo_confirmacao(self, email):
+        """Gera e envia um código de confirmação para o e-mail do cadastro."""
+        self.codigo_confirmacao = f"{randint(0, 9999):04d}"
+        self.tentativas_codigo = 0
+        enviar_email_codigo_confirmacao(email.strip().lower(), self.codigo_confirmacao)
+        return self.codigo_confirmacao
+
+    def validar_codigo_cadastro(self, codigo):
+        """Valida o código recebido e retorna se ainda há tentativas restantes."""
+        codigo = str(codigo or "").strip()
+        if codigo == str(self.codigo_confirmacao or ""):
+            self.tentativas_codigo = 0
+            return True
+
+        self.tentativas_codigo = (self.tentativas_codigo or 0) + 1
+        return False
+
+    def cadastrar(self, nome, telefone, email, senha, tipo="Funcionario", codigo_confirmacao=None):
         """Cadastra um usuário aguardando aprovação do administrador."""
         self.erro = None
         tipo = tipo if tipo in ("Administrador", "Funcionario") else "Funcionario"
@@ -44,11 +61,12 @@ class User:
             if cursor.fetchone():
                 self.erro = "E-mail ou telefone já cadastrado."
                 return False
+            codigo_final = codigo_confirmacao or f"{randint(0, 9999):04d}"
             cursor.execute(
                 """INSERT INTO tb_usuarios
                    (nome, email, senha, telefone, tipo_usuario, codigo_confirmacao, primeiro_login, aprovado)
                    VALUES (%s, %s, %s, %s, %s, %s, TRUE, FALSE)""",
-                (nome.strip(), email, self._hash_senha(senha), telefone, tipo, f"{randint(0, 9999):04d}"),
+                (nome.strip(), email, self._hash_senha(senha), telefone, tipo, codigo_final),
             )
             conexao.commit()
             return True

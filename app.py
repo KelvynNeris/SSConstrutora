@@ -48,12 +48,69 @@ def cadastro():
         if senha != request.form.get("confirmar_senha", ""):
             flash("As senhas não coincidem.", "erro")
             return render_template("cadastro.html")
+
         usuario = User()
-        if usuario.cadastrar(request.form.get("nome", ""), request.form.get("telefone", ""), request.form.get("email", ""), senha):
-            session["cadastro_email"] = request.form.get("email", "")
-            return redirect(url_for("aguardando_confirmacao"))
-        flash(usuario.erro, "erro")
+        email = request.form.get("email", "").strip().lower()
+        telefone = request.form.get("telefone", "")
+        nome = request.form.get("nome", "")
+
+        if usuario.verificar_duplicidade(email, telefone):
+            flash("E-mail ou telefone já cadastrado.", "erro")
+            return render_template("cadastro.html")
+
+        codigo = usuario.gerar_codigo_confirmacao(email)
+        session["cadastro_dados"] = {
+            "nome": nome,
+            "telefone": telefone,
+            "email": email,
+            "senha": senha,
+            "codigo": codigo,
+        }
+        session["cadastro_tentativas"] = 0
+        return redirect(url_for("confirmar_cadastro"))
+
     return render_template("cadastro.html")
+
+@app.route("/cadastro/confirmar", methods=["GET", "POST"])
+def confirmar_cadastro():
+    dados = session.get("cadastro_dados")
+    if not dados:
+        return redirect(url_for("cadastro"))
+
+    if request.method == "POST":
+        codigo_digitado = request.form.get("codigo", "")
+        usuario = User()
+        usuario.codigo_confirmacao = dados.get("codigo")
+        usuario.tentativas_codigo = session.get("cadastro_tentativas", 0)
+
+        if usuario.validar_codigo_cadastro(codigo_digitado):
+            if usuario.cadastrar(
+                dados.get("nome", ""),
+                dados.get("telefone", ""),
+                dados.get("email", ""),
+                dados.get("senha", ""),
+                codigo_confirmacao=dados.get("codigo"),
+            ):
+                session["cadastro_email"] = dados.get("email", "")
+                session.pop("cadastro_dados", None)
+                session.pop("cadastro_tentativas", None)
+                return redirect(url_for("aguardando_confirmacao"))
+            flash(usuario.erro, "erro")
+            return redirect(url_for("cadastro"))
+
+        tentativas = session.get("cadastro_tentativas", 0) + 1
+        session["cadastro_tentativas"] = tentativas
+
+        if tentativas >= 2:
+            session.pop("cadastro_dados", None)
+            session.pop("cadastro_tentativas", None)
+            flash("Tente se cadastrar novamente", "erro")
+            return redirect(url_for("inicio"))
+
+        flash(f"Código incorreto. Você tem {2 - tentativas} tentativa(s) restante(s).", "erro")
+        return redirect(url_for("confirmar_cadastro"))
+
+    return render_template("confirmar_cadastro.html", email=dados.get("email", ""))
 
 @app.route("/aguardando-confirmacao")
 def aguardando_confirmacao():
