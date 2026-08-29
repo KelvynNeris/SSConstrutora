@@ -31,6 +31,8 @@
                 {% if mensagens %}<div class="form-alert" role="alert">{{ mensagens[0][1] }}</div>{% endif %}
             {% endwith %}
             <form class="auth-form" method="post" action="{{ url_for('confirmar_cadastro') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                
                 <label for="codigo">Código de 4 dígitos</label>
                 <input id="codigo" name="codigo" type="text" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="Ex.: 1234" required>
 

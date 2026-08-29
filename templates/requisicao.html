@@ -32,6 +32,7 @@
         {% endwith %}
 
         <form class="request-form" method="post" action="{{ url_for('requisicao') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <div class="request-block">
                 <span class="block-number">01</span>
                 <div class="block-content">

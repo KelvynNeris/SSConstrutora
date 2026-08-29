@@ -42,7 +42,7 @@
             {% if cadastros %}
                 <div class="pending-users-list">
                     {% for cadastro in cadastros %}
-                        <article class="pending-user"><span class="request-initial">{{ cadastro.nome[:1]|upper }}</span><div class="pending-user-data"><strong>{{ cadastro.nome }}</strong><p>{{ cadastro.email }} · {{ cadastro.telefone }}</p><small>Solicitado em {{ cadastro.data_criacao.strftime('%d/%m/%Y às %H:%M') }}</small></div><form method="post" action="{{ url_for('aprovar_cadastro', id_usuario=cadastro.id_usuario) }}"><button class="button button-primary" type="submit">Aprovar acesso <span aria-hidden="true">-&gt;</span></button></form></article>
+                        <article class="pending-user"><span class="request-initial">{{ cadastro.nome[:1]|upper }}</span><div class="pending-user-data"><strong>{{ cadastro.nome }}</strong><p>{{ cadastro.email }} · {{ cadastro.telefone }}</p><small>Solicitado em {{ cadastro.data_criacao.strftime('%d/%m/%Y às %H:%M') }}</small></div><form method="post" action="{{ url_for('aprovar_cadastro', id_usuario=cadastro.id_usuario) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="button button-primary" type="submit">Aprovar acesso <span aria-hidden="true">-&gt;</span></button></form></article>
                     {% endfor %}
                 </div>
             {% else %}

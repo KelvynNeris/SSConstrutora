@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Senha | SS Construtora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-page">
+    <main class="auth-layout auth-layout-reverse">
+        <section class="auth-intro">
+            <a class="brand auth-brand" href="/" aria-label="Voltar para o início">
+                <span class="brand-mark">SS</span>
+                <span><strong>SS Construtora</strong><small>Gestão de obras</small></span>
+            </a>
+            <div class="auth-message">
+                <p class="eyebrow">Recuperação</p>
+                <h1>Esqueceu sua<br><em>senha?</em></h1>
+                <p>Digite seu e-mail e enviaremos um link para redefinir sua senha.</p>
+            </div>
+            <span class="auth-number">01 / 02</span>
+        </section>
+
+        <section class="auth-form-area">
+            <div class="form-heading">
+                <p class="eyebrow">Recuperar Acesso</p>
+                <h2>Recuperar senha</h2>
+            </div>
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                    <div class="form-alert{% if mensagens[0][0] == 'sucesso' %} sucesso{% endif %}" role="alert">
+                        {{ mensagens[0][1] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <form class="auth-form" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <label for="email">E-mail cadastrado</label>
+                <input id="email" name="email" type="email" placeholder="seu@email.com" required>
+
+                <button class="button button-primary form-submit" type="submit">Enviar link de recuperação <span aria-hidden="true">-&gt;</span></button>
+            </form>
+            <p class="form-footer"><a href="{{ url_for('login') }}">Voltar ao login</a></p>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

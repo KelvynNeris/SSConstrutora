@@ -30,6 +30,8 @@
                 {% if mensagens %}<div class="form-alert" role="alert">{{ mensagens[0][1] }}</div>{% endif %}
             {% endwith %}
             <form class="auth-form" method="post" action="{{ url_for('login') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                
                 <label for="nome">Nome completo</label>
                 <input id="nome" name="nome" type="text" autocomplete="name" placeholder="Como aparece no cadastro" required>
 
@@ -42,6 +44,7 @@
                 <button class="button button-primary form-submit" type="submit">Entrar <span aria-hidden="true">-&gt;</span></button>
             </form>
             <p class="form-footer">Ainda não tem cadastro? <a href="{{ url_for('cadastro') }}">Criar uma conta</a></p>
+            <p class="form-footer"><a href="{{ url_for('recuperar_senha') }}">Esqueceu sua senha?</a></p>
         </section>
     </main>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>

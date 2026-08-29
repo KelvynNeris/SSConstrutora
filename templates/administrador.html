@@ -71,7 +71,7 @@
                 <div class="panel-heading"><div><p class="eyebrow">Visão geral</p><h2>Obras ativas</h2></div><a href="#obras">Detalhes <span aria-hidden="true">-&gt;</span></a></div>
                 <div class="work-list">
                     {% for obra in obras %}
-                        <div class="work-item"><span>{{ obra.nome }}<small>{{ obra.endereco }}</small></span><form method="post" action="{{ url_for('excluir_obra', id_obra=obra.id_obra) }}" onsubmit="return confirm('Remover esta obra apenas da exibição? O histórico será preservado.');"><button class="work-delete" type="submit" aria-label="Remover {{ obra.nome }} da exibição">&times;</button></form></div>
+                        <div class="work-item"><span>{{ obra.nome }}<small>{{ obra.endereco }}</small></span><form method="post" action="{{ url_for('excluir_obra', id_obra=obra.id_obra) }}" onsubmit="return confirm('Remover esta obra apenas da exibição? O histórico será preservado.');"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="work-delete" type="submit" aria-label="Remover {{ obra.nome }} da exibição">&times;</button></form></div>
                     {% else %}
                         <div class="empty-state"><strong>Nenhuma obra ativa</strong><p>Cadastre uma nova obra para exibi-la aqui.</p></div>
                     {% endfor %}
@@ -86,6 +86,7 @@
             <h2 id="modal-title">Detalhes do pedido</h2>
             <div class="modal-request-summary"><strong id="modal-material">Material</strong><span id="modal-quantity">Quantidade</span><span id="modal-work">Obra</span><span id="modal-requester">Funcionário</span><span id="modal-date">Data</span></div>
             <form class="modal-form" method="post" id="request-update-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                 <div><label for="modal-status">Atualizar status</label><select id="modal-status" name="status"><option>Pendente</option><option>Aprovado</option><option>Recusado</option><option>Atendido</option><option>Entregue</option></select></div>
                 <div><label for="modal-value">Valor pago (R$)</label><input id="modal-value" name="valor_pago" type="number" min="0" step="0.01" placeholder="Ex.: 420,00"></div>
                 <div><label for="modal-store">Loja fornecedora</label><input id="modal-store" name="loja" type="text" placeholder="Nome da loja onde foi comprado"></div>
@@ -100,6 +101,7 @@
             <h2 id="work-modal-title">Nova obra</h2>
             <p class="modal-description">Cadastre a obra para que ela possa ser usada nas requisições da equipe.</p>
             <form class="modal-form" method="post" action="{{ url_for('cadastrar_obra') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                 <div class="modal-field-wide"><label for="work-name">Nome da obra</label><input id="work-name" name="nome" type="text" placeholder="Ex.: Residencial Jardim Sul" required></div>
                 <div class="modal-field-wide"><label for="work-address">Endereço</label><input id="work-address" name="endereco" type="text" placeholder="Rua, número, bairro e cidade" required></div>
                 <div class="modal-field-wide"><label for="work-manager">Responsável <span class="optional">opcional</span></label><input id="work-manager" name="responsavel" type="text" placeholder="Nome do mestre de obras"></div>

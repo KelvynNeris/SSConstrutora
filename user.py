@@ -2,9 +2,11 @@ from hashlib import sha256
 from hmac import compare_digest
 from random import randint
 import re
+from datetime import datetime, timedelta
 
 from conexao import Conexao
 from email_service import enviar_email_admin, enviar_email_codigo_confirmacao
+from security import TokenRecuperacaoSenha
 
 
 class User:
@@ -305,6 +307,118 @@ class User:
                 (nome,),
             )
             return cursor.fetchone()
+        finally:
+            if cursor:
+                cursor.close()
+            if conexao:
+                conexao.close()
+
+    def solicitar_recuperacao_senha(self, email):
+        """Gera um token de recuperação e envia por e-mail."""
+        email = email.strip().lower()
+        conexao = None
+        cursor = None
+        try:
+            conexao = Conexao.conectar()
+            cursor = conexao.cursor()
+            
+            # Verifica se o e-mail existe
+            cursor.execute("SELECT id_usuario, email FROM tb_usuarios WHERE email = %s", (email,))
+            resultado = cursor.fetchone()
+            
+            if not resultado:
+                # Não informa se existe ou não (segurança)
+                return False
+            
+            # Gera token e calcula expiração
+            token = TokenRecuperacaoSenha.gerar_token()
+            token_hash = TokenRecuperacaoSenha.hash_token(token)
+            data_expiracao = datetime.now() + timedelta(hours=1)
+            
+            # Armazena token no banco
+            cursor.execute(
+                """UPDATE tb_usuarios 
+                   SET token_reset_senha = %s, token_reset_expiracao = %s
+                   WHERE id_usuario = %s""",
+                (token_hash, data_expiracao, resultado[0]),
+            )
+            conexao.commit()
+            
+            # Envia e-mail com link de recuperação
+            from email_service import enviar_email_recuperacao
+            enviar_email_recuperacao(email, token)
+            
+            return True
+        except Exception:
+            if conexao:
+                conexao.rollback()
+            return False
+        finally:
+            if cursor:
+                cursor.close()
+            if conexao:
+                conexao.close()
+
+    def validar_token_reset(self, token):
+        """Valida o token de reset e retorna o ID do usuário se válido."""
+        token_hash = TokenRecuperacaoSenha.hash_token(token)
+        conexao = None
+        cursor = None
+        try:
+            conexao = Conexao.conectar()
+            cursor = conexao.cursor()
+            
+            cursor.execute(
+                """SELECT id_usuario, token_reset_expiracao 
+                   FROM tb_usuarios 
+                   WHERE token_reset_senha = %s AND token_reset_expiracao IS NOT NULL""",
+                (token_hash,),
+            )
+            resultado = cursor.fetchone()
+            
+            if not resultado:
+                return None
+            
+            id_usuario, data_expiracao = resultado
+            
+            # Valida expiração
+            if datetime.now() > data_expiracao:
+                return None
+            
+            return id_usuario
+        except Exception:
+            return None
+        finally:
+            if cursor:
+                cursor.close()
+            if conexao:
+                conexao.close()
+
+    def redefinir_senha(self, id_usuario, nova_senha):
+        """Redefine a senha do usuário e limpa o token de reset."""
+        conexao = None
+        cursor = None
+        try:
+            conexao = Conexao.conectar()
+            cursor = conexao.cursor()
+            
+            cursor.execute(
+                """UPDATE tb_usuarios 
+                   SET senha = %s, token_reset_senha = NULL, token_reset_expiracao = NULL
+                   WHERE id_usuario = %s""",
+                (self._hash_senha(nova_senha), id_usuario),
+            )
+            
+            if cursor.rowcount != 1:
+                conexao.rollback()
+                return False
+            
+            conexao.commit()
+            return True
+        except Exception:
+            if conexao:
+                conexao.rollback()
+            return False
         finally:
             if cursor:
                 cursor.close()

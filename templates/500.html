@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erro no servidor | SS Construtora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-page" style="display: flex; align-items: center;">
+    <main class="auth-layout" style="width: 100%; display: flex; align-items: center; justify-content: center;">
+        <section style="text-align: center; padding: 40px; max-width: 500px;">
+            <a class="brand" href="/" aria-label="Voltar para o início" style="justify-content: center; margin-bottom: 60px;">
+                <span class="brand-mark">SS</span>
+                <span><strong>SS Construtora</strong><small>Gestão de obras</small></span>
+            </a>
+            
+            <div style="margin-bottom: 40px;">
+                <p style="font-size: 96px; margin: 0; color: var(--orange-dark);">500</p>
+                <h1 style="font-size: 48px; margin: 20px 0 10px;">Erro no servidor</h1>
+                <p style="color: var(--muted); font-size: 16px;">Algo deu errado. Estamos trabalhando para corrigir o problema. Tente novamente mais tarde.</p>
+            </div>
+
+            <a href="{{ url_for('inicio') }}" class="button button-primary">Voltar ao início</a>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

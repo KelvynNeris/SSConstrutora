@@ -30,6 +30,8 @@
                 {% if mensagens %}<div class="form-alert" role="alert">{{ mensagens[0][1] }}</div>{% endif %}
             {% endwith %}
             <form class="auth-form" method="post" action="{{ url_for('cadastro') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                
                 <label for="nome">Nome completo</label>
                 <input id="nome" name="nome" type="text" autocomplete="name" placeholder="Digite seu nome completo" required>
 
@@ -40,10 +42,10 @@
                 <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required>
 
                 <label for="senha">Senha</label>
-                <input id="senha" name="senha" type="password" autocomplete="new-password" minlength="6" placeholder="Crie uma senha com pelo menos 6 caracteres" required>
+                <input id="senha" name="senha" type="password" autocomplete="new-password" minlength="8" placeholder="Mínimo 8 caracteres com números e maiúsculas" required>
 
                 <label for="confirmar_senha">Confirmar senha</label>
-                <input id="confirmar_senha" name="confirmar_senha" type="password" autocomplete="new-password" minlength="6" placeholder="Digite a senha novamente" oninput="this.setCustomValidity(this.value !== document.getElementById('senha').value ? 'As senhas não coincidem.' : '')" required>
+                <input id="confirmar_senha" name="confirmar_senha" type="password" autocomplete="new-password" minlength="8" placeholder="Digite a senha novamente" oninput="this.setCustomValidity(this.value !== document.getElementById('senha').value ? 'As senhas não coincidem.' : '')" required>
 
                 <button class="button button-primary form-submit" type="submit">Continuar cadastro <span aria-hidden="true">-&gt;</span></button>
             </form>

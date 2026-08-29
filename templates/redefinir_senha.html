@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redefinir Senha | SS Construtora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-page">
+    <main class="auth-layout auth-layout-reverse">
+        <section class="auth-intro">
+            <a class="brand auth-brand" href="/" aria-label="Voltar para o início">
+                <span class="brand-mark">SS</span>
+                <span><strong>SS Construtora</strong><small>Gestão de obras</small></span>
+            </a>
+            <div class="auth-message">
+                <p class="eyebrow">Recuperação</p>
+                <h1>Crie uma nova<br><em>senha.</em></h1>
+                <p>Digite uma nova senha segura para sua conta.</p>
+            </div>
+            <span class="auth-number">02 / 02</span>
+        </section>
+
+        <section class="auth-form-area">
+            <div class="form-heading">
+                <p class="eyebrow">Nova Senha</p>
+                <h2>Redefinir senha</h2>
+            </div>
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                    <div class="form-alert{% if mensagens[0][0] == 'sucesso' %} sucesso{% endif %}" role="alert">
+                        {{ mensagens[0][1] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <form class="auth-form" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                
+                <label for="nova_senha">Nova Senha</label>
+                <input id="nova_senha" name="nova_senha" type="password" placeholder="Mínimo 8 caracteres" required>
+                <small class="form-help">Mínimo 8 caracteres, com números e letras maiúsculas</small>
+
+                <label for="confirmar_senha" style="margin-top: 22px;">Confirmar Senha</label>
+                <input id="confirmar_senha" name="confirmar_senha" type="password" placeholder="Repita a senha" required>
+
+                <button class="button button-primary form-submit" type="submit" style="margin-top: 13px;">Redefinir Senha <span aria-hidden="true">-&gt;</span></button>
+            </form>
+            <p class="form-footer"><a href="{{ url_for('login') }}">Voltar ao login</a></p>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

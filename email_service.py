@@ -82,3 +82,18 @@ def enviar_email_funcionario(id_pedido, nome_funcionario, email_funcionario, nom
         "Acompanhe o andamento no sistema da SS Construtora."
     )
     return _enviar_email(email_funcionario, assunto, corpo)
+
+
+def enviar_email_recuperacao(email_destino, token):
+    """Envia um link de recuperação de senha."""
+    base_url = os.getenv("APP_BASE_URL", "http://localhost:5000")
+    link_recuperacao = f"{base_url}/redefinir-senha/{token}"
+    
+    assunto = "Recupere sua senha na SS Construtora"
+    corpo = (
+        "Solicitamos uma recuperação de senha para sua conta.\n\n"
+        f"Clique no link abaixo para criar uma nova senha:\n{link_recuperacao}\n\n"
+        "Este link expira em 1 hora.\n\n"
+        "Se você não solicitou essa recuperação, ignore este e-mail."
+    )
+    return _enviar_email(email_destino, assunto, corpo)

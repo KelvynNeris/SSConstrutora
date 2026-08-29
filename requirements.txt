@@ -1,0 +1,14 @@
+# Dependências obrigatórias
+Flask==2.3.3
+mysql-connector-python==8.2.0
+python-dotenv==1.0.0
+
+# Segurança e HTTPS
+cryptography==41.0.4
+pyopenssl==23.3.0
+
+# Utilidades
+requests==2.31.0
+
+# Desenvolvimento (opcional)
+python-decouple==3.8
