@@ -159,4 +159,31 @@ document.addEventListener("DOMContentLoaded", () => {
             if (event.key === "Escape" && logoutModal.classList.contains("is-open")) closeLogoutModal();
         });
     }
+
+    const historyModal = document.querySelector("#history-modal");
+    if (historyModal) {
+        const closeHistoryModal = () => {
+            historyModal.classList.remove("is-open");
+            historyModal.setAttribute("aria-hidden", "true");
+        };
+
+        document.querySelectorAll("[data-open-history-modal]").forEach((button) => {
+            button.addEventListener("click", () => {
+                historyModal.classList.add("is-open");
+                historyModal.setAttribute("aria-hidden", "false");
+            });
+        });
+
+        document.querySelectorAll("[data-close-history-modal]").forEach((button) => {
+            button.addEventListener("click", closeHistoryModal);
+        });
+
+        historyModal.addEventListener("click", (event) => {
+            if (event.target === historyModal) closeHistoryModal();
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && historyModal.classList.contains("is-open")) closeHistoryModal();
+        });
+    }
 });

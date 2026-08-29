@@ -208,23 +208,26 @@ class User:
                 conexao.close()
 
     @staticmethod
-    def listar_pedidos(id_funcionario):
+    def listar_pedidos(id_funcionario, incluir_entregues=False):
         """Retorna as requisições do funcionário com os dados do material."""
         conexao = None
         cursor = None
         try:
             conexao = Conexao.conectar()
             cursor = conexao.cursor(dictionary=True)
-            cursor.execute(
-                """SELECT p.id_pedido, p.obra, p.quantidade, p.apresentacao,
-                          p.status, p.data_pedido, p.valor_pago,
-                          m.nome AS material_nome
-                   FROM tb_pedidos p
-                   INNER JOIN tb_materiais m ON m.id_material = p.id_material
-                   WHERE p.id_funcionario = %s
-                   ORDER BY p.data_pedido DESC""",
-                (id_funcionario,),
-            )
+            sql = """
+                SELECT p.id_pedido, p.obra, p.quantidade, p.apresentacao,
+                       p.status, p.data_pedido, p.valor_pago,
+                       m.nome AS material_nome
+                FROM tb_pedidos p
+                INNER JOIN tb_materiais m ON m.id_material = p.id_material
+                WHERE p.id_funcionario = %s
+            """
+            parametros = [id_funcionario]
+            if not incluir_entregues:
+                sql += " AND p.status NOT IN ('Entregue', 'Atendido') "
+            sql += " ORDER BY p.data_pedido DESC"
+            cursor.execute(sql, parametros)
             return cursor.fetchall()
         finally:
             if cursor:

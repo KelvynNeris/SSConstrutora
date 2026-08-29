@@ -1,4 +1,5 @@
 from conexao import Conexao
+from email_service import enviar_email_funcionario
 
 
 class Administrador:
@@ -255,7 +256,7 @@ class Administrador:
 	@staticmethod
 	def atualizar_requisicao(id_pedido, id_administrador, status, valor_pago=None, loja=""):
 		"""Atualiza o status e o custo real de uma requisição."""
-		status_validos = {"Pendente", "Aprovado", "Recusado", "Atendido"}
+		status_validos = {"Pendente", "Aprovado", "Recusado", "Atendido", "Entregue"}
 		if status not in status_validos:
 			raise ValueError("Status de requisição inválido.")
 
@@ -287,7 +288,31 @@ class Administrador:
 			if cursor.rowcount != 1:
 				conexao.rollback()
 				raise ValueError("Requisição não encontrada.")
+
+			cursor.execute(
+				"""SELECT u.nome, u.email, p.obra, m.nome AS material_nome, p.quantidade, m.unidade
+				   FROM tb_pedidos p
+				   INNER JOIN tb_usuarios u ON u.id_usuario = p.id_funcionario
+				   INNER JOIN tb_materiais m ON m.id_material = p.id_material
+				   WHERE p.id_pedido = %s""",
+				(id_pedido,),
+			)
+			dados_pedido = cursor.fetchone()
 			conexao.commit()
+
+			if dados_pedido:
+				nome_funcionario, email_funcionario, nome_obra, material, quantidade, unidade = dados_pedido
+				enviar_email_funcionario(
+					id_pedido=id_pedido,
+					nome_funcionario=nome_funcionario,
+					email_funcionario=email_funcionario,
+					nome_obra=nome_obra,
+					material=material,
+					quantidade=quantidade,
+					status=status,
+					unidade=unidade or "unidade",
+					observacao=f"Status atualizado para {status} pelo administrador.",
+				)
 			return True
 		except Exception:
 			if conexao:

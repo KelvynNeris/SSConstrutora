@@ -213,18 +213,20 @@ def relatorio():
 def funcionario():
     if session.get("usuario_tipo") != "Funcionario" or not session.get("usuario_id"):
         return redirect(url_for("login"))
-    pedidos = User.listar_pedidos(session["usuario_id"])
+    pedidos = User.listar_pedidos(session["usuario_id"], incluir_entregues=False)
+    historico_pedidos = User.listar_pedidos(session["usuario_id"], incluir_entregues=True)
     resumo = {
         "analise": sum(pedido["status"] == "Pendente" for pedido in pedidos),
         "aprovados": sum(pedido["status"] == "Aprovado" for pedido in pedidos),
-        "recebidos": sum(pedido["status"] == "Atendido" for pedido in pedidos),
+        "recebidos": sum(pedido["status"] in ("Atendido", "Entregue") for pedido in historico_pedidos),
     }
-    obra = pedidos[0]["obra"] if pedidos else "Nenhuma obra cadastrada"
-    obra_info = User.buscar_obra(obra) if pedidos else None
+    obra = pedidos[0]["obra"] if pedidos else (historico_pedidos[0]["obra"] if historico_pedidos else "Nenhuma obra cadastrada")
+    obra_info = User.buscar_obra(obra) if obra and obra != "Nenhuma obra cadastrada" else None
     return render_template(
         "funcionario.html",
         nome=session.get("usuario_nome", "Funcionário"),
         pedidos=pedidos,
+        historico_pedidos=historico_pedidos,
         resumo=resumo,
         obra=obra,
         responsavel=(obra_info or {}).get("responsavel") or "Responsável não informado",

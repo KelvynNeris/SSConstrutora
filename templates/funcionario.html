@@ -32,6 +32,30 @@
         </div>
     </div>
 
+    <div class="modal-backdrop" id="history-modal" aria-hidden="true">
+        <div class="request-modal history-modal" role="dialog" aria-modal="true" aria-labelledby="history-title">
+            <button type="button" class="modal-close" data-close-history-modal aria-label="Fechar histórico">×</button>
+            <p class="eyebrow">Histórico</p>
+            <h2 id="history-title">Todos os meus pedidos</h2>
+            <div class="history-list">
+                {% for pedido in historico_pedidos %}
+                    <article class="history-item">
+                        <div>
+                            <strong>{{ pedido.material_nome }}</strong>
+                            <p>{{ pedido.quantidade }} {{ pedido.apresentacao }} · {{ pedido.obra }}</p>
+                        </div>
+                        <div class="history-meta">
+                            <span class="request-status {% if pedido.status == 'Pendente' %}pending-status{% elif pedido.status == 'Aprovado' %}approved-status{% elif pedido.status in ('Atendido', 'Entregue') %}delivered-status{% else %}rejected-status{% endif %}">{{ pedido.status }}</span>
+                            <time>{{ pedido.data_pedido.strftime('%d/%m/%Y') }}</time>
+                        </div>
+                    </article>
+                {% else %}
+                    <div class="empty-state"><strong>Nenhum pedido registrado</strong><p>Seu histórico aparecerá aqui assim que houver solicitações.</p></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
     <main class="employee-shell">
         <section class="employee-heading">
             <div>
@@ -56,12 +80,12 @@
 
         <section class="employee-content" id="pedidos">
             <div class="admin-panel employee-panel">
-                <div class="panel-heading"><div><p class="eyebrow">Acompanhamento</p><h2>Meus pedidos recentes</h2></div><a href="#pedidos">Ver histórico <span aria-hidden="true">-&gt;</span></a></div>
+                <div class="panel-heading"><div><p class="eyebrow">Acompanhamento</p><h2>Meus pedidos recentes</h2></div><button type="button" class="panel-history-link" data-open-history-modal><span>Ver histórico</span><span class="panel-history-icon" aria-hidden="true">→</span></button></div>
                 <div class="employee-request-list">
                     {% for pedido in pedidos %}
-                        <article class="employee-request"><div><strong>{{ pedido.material_nome }}</strong><p>{{ pedido.quantidade }} {{ pedido.apresentacao }} · {{ pedido.obra }} · {{ pedido.data_pedido.strftime('%d/%m/%Y') }}</p></div><span class="request-status {% if pedido.status == 'Pendente' %}pending-status{% elif pedido.status == 'Aprovado' %}approved-status{% elif pedido.status == 'Atendido' %}delivered-status{% else %}rejected-status{% endif %}">{{ pedido.status }}</span></article>
+                        <article class="employee-request"><div><strong>{{ pedido.material_nome }}</strong><p>{{ pedido.quantidade }} {{ pedido.apresentacao }} · {{ pedido.obra }} · {{ pedido.data_pedido.strftime('%d/%m/%Y') }}</p></div><span class="request-status {% if pedido.status == 'Pendente' %}pending-status{% elif pedido.status == 'Aprovado' %}approved-status{% elif pedido.status in ('Atendido', 'Entregue') %}delivered-status{% else %}rejected-status{% endif %}">{{ pedido.status }}</span></article>
                     {% else %}
-                        <div class="empty-state"><strong>Nenhum pedido encontrado</strong><p>Faça sua primeira requisição de material para a obra.</p></div>
+                        <div class="empty-state"><strong>Nenhum pedido em aberto</strong><p>Todos os seus pedidos já foram entregues ou ainda não foram registrados.</p></div>
                     {% endfor %}
                 </div>
             </div>
